@@ -1,0 +1,31 @@
+﻿@if (((string)@ViewBag.IsSucesso).ToLower().Equals("false"))
+{
+    <div class="alert alert-danger alert-dismissible" role="alert" id="DivMensagensErroGrade">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <img src="~/images/errado.png" /><b>&nbsp;Erro!</b>
+        <p style="padding-left:2em">@Html.Raw(@ViewBag.LblMensagem)</p>
+    </div>
+    <script>
+        $('html, body').animate({ scrollTop: 0 }, 'fast');
+    </script>
+}
+else if (((string)@ViewBag.IsSucesso).ToLower().Equals("true"))
+{
+    <div class="alert alert-success alert-dismissible" role="alert" id="DivMensagensSucessoGrade">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <img src="~/images/certo.png" />@Html.Label("LblMensagem", (string)@ViewBag.LblMensagem)
+    </div>
+    <script>
+        setTimeout(function () {
+            $("#DivMensagensSucessoGrade").fadeOut("slow");
+        }, 3000);
+    </script>
+}
+<input type="hidden" id="HdnIdChave" name="HdnIdChave" value="@ViewBag.Id"></>
+<script>
+    try {
+        DesativarProcessandoIndex();
+    } catch (e) {
+        DesativarProcessandoCadastro();
+    }
+</script>

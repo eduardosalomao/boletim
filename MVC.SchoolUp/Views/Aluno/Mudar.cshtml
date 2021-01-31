@@ -1,0 +1,67 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmNovoAcesso>
+
+@{
+    ViewBag.TituloPagina = "Escolher Aluno";
+    Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Aluno";
+    ViewBag.Action = "Mudar";
+    ViewBag.View = "Aluno";
+}
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="row clearfix">
+    <input asp-for="Dados.FirstOrDefault().IdEscola" type="hidden" value="@ViewBag.IdEscola" />
+    <input asp-for="Dados.FirstOrDefault().IdUsuario" type="hidden" value="@ViewBag.IdUsuario" />
+    <div class="col-md-6">
+        <div class="card">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="body">
+                <h4 class="col-indigo">Escolher Aluno</h4>
+                <hr style="height:1px; background-color:indigo" />
+                <div class="row clearfix">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().IdAluno" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <select asp-for="Dados.FirstOrDefault().IdAluno" class="form-control show-tick" asp-items="ViewBag.IdAluno" placeholder="@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem">
+                                    <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+                                </select>
+                                <span asp-validation-for="Dados.FirstOrDefault().IdAluno" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        document.getElementById('BtnCadastroNovo').href = "Novo";
+        $("#BtnCadastroNovo").html('<i class="far fa-file"></i>&nbsp;&nbsp;Novo');
+        $("#BtnCadastroVoltar").hide();
+        $("#BtnCadastroGravar").hide();
+        ChangeAluno();
+    });
+    
+    function ChangeAluno() {
+        $("#IdAluno").change(function () {
+            ProcessandoCadastro();
+            var valorAluno = $("#IdAluno").val();
+            if (valorAluno = '') {
+                return;
+            }
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("SetAluno")',
+                data: { idAluno: $("#IdAluno").val() }
+            })
+                .done(function () {
+                    window.location.href = '@Url.Action("Index", "Home")';
+            });
+        });
+    }
+</script>

@@ -1,0 +1,232 @@
+﻿@model Modelo.SchoolUp.Custom.CmPrincipalAdmin
+@{
+    ViewData["Title"] = "Principal";
+}
+
+<script src="~/js/Home.js"></script>
+@*<script src="~/lib/bootstrap-select/dist/js/bootstrap-select.js"></script>
+    <script src="~/lib/select2/dist/css/select2.css"></script>
+    <script src="~/lib/select2/dist/js/select2.js"></script>*@
+
+@if (ViewBag.Ambiente != "Production")
+{
+    <p>@ViewBag.Ambiente</p>
+}
+
+<!-- Nav tabs -->
+@{
+    if (Model?.Bimestres?.Any() != true)
+    {
+        <h3>Nenhum bimestre criado.</h3>
+        return;
+    }
+}
+
+@{
+    if (Model.Perfil == "ADMIN")
+    {
+        <div class="body">
+            <div class="row clearfix">
+                <div class="col-md-2">
+                    <p>
+                        <label class="control-label col-indigo">Período</label>
+                    </p>
+                    <select id="ddlPeriodo" name="ddlPeriodo" class="form-control show-tick" asp-items="ViewBag.IdPeriodo">
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <p>
+                        <label class="control-label col-indigo">Turma</label>
+                    </p>
+                    <select id="ddlTurma" name="ddlTurma" class="form-control show-tick" asp-items="ViewBag.IdTurma">
+                        <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <p>
+                        <label class="control-label col-indigo">Aluno</label>
+                    </p>
+                    <select id="ddlAluno" name="ddlAluno" class="form-control show-tick" asp-items="ViewBag.IdAluno">
+                        <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmaTurma</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <p>
+                        <label class="control-label col-indigo">&nbsp;</label>
+                    </p>
+                    <button id="BtnLimpar" name="BtnLimpar" onclick="Limpar(); return false;" class="btn col-md-3 BtnCadastro btn-info">
+                        <i class="fas fa-eraser"></i>
+                    </button>
+                    <button type="button" id="BtnFiltrar" onclick="GerarBoletim(); return false;" name="BtnFiltrar" class="btn col-md-3 col-md-offset-1 BtnCadastro btn-success">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <div id="DivProcessandoCadastro" class="col-md-2 invisible">
+                        <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+                    </div>
+                </div>
+            </div>
+            <br />
+        </div>
+    }
+}
+
+@{
+    if (Model.Perfil != "ADMIN")
+    {
+        <div class="row clearfix">
+            <div class="col-md-offset-2 col-md-8">
+                <p>*As notas mostradas são informativas. Em caso de alguma dúvida entre em contato com a escola para melhores esclarecimentos. As notas podem ser alteradas sem aviso prévio.</p>
+            </div>
+        </div>
+        <div class="body">
+            <input id="HdnIdAluno" type="hidden" value="@ViewBag.IdAluno" name="HdnIdAluno" />
+            <div class="row clearfix">
+                <div class="col-md-2">
+                    <p>
+                        <label class="control-label col-indigo">Período</label>
+                    </p>
+                    <select id="ddlPeriodoAluno" name="ddlPeriodoAluno" class="form-control show-tick" asp-items="ViewBag.IdPeriodo">
+                        <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <div id="DivProcessandoCadastro" class="col-md-2 invisible">
+                        <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+                    </div>
+                </div>
+            </div>
+            <br />
+        </div>
+    }
+}
+
+
+<div id="DivBoletim" onload="RefreshDonuts('empty-redraw');">
+    @{
+        Html.RenderPartial("PartialIndex", Model);
+    }
+</div>
+
+<script>
+    $(document).ready(function () {
+        ChangePeriodo();
+        ChangePeriodoAluno();
+        ChangeTurma();
+    });
+
+    function ChangePeriodoAluno() {
+        $("#ddlPeriodoAluno").change(function () {
+            ProcessandoCadastro();
+            GerarBoletimAluno();
+
+            return false;
+        });
+    }
+    function ChangePeriodo() {
+        $("#ddlPeriodo").change(function () {
+            ProcessandoCadastro();
+            Limpar();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetTurmas")',
+                dataType: 'json',
+                data: { idPeriodo: $("#ddlPeriodo").val() },
+                success: function (resultTurma) {
+                    $("#ddlTurma").empty();
+                    if (resultTurma == null) {
+                        $("#ddlTurma").append("<option value=''>Sem turma</option>");
+                    }
+                    else {
+                        $("#ddlTurma").append("<option value=''>@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>");
+                    }
+                    $.each(resultTurma, function (i, turma) {
+                        $("#ddlTurma").append($('<option>').text(turma.nome).attr('value', turma.id));
+                    });
+                    //$("#ddlTurma").selectpicker('refresh');
+                    //$("#ddlTurma").selectpicker('render');
+                    DesativarProcessandoCadastro();
+                },
+                error: function (ex) {
+                    DesativarProcessandoCadastro();
+                    alert('Erro ao receber turmas');
+                }
+            });
+
+            return false;
+        });
+    }
+
+    function ChangeTurma() {
+        $("#ddlTurma").change(function () {
+            ProcessandoCadastro();
+            $("#ddlAluno").empty();
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetAlunos")',
+                data: { idTurma: $("#ddlTurma").val() }
+            })
+                .done(function (resultAluno) {
+                    if (resultAluno == null) {
+                        $("#ddlAluno").append("<option value='' selected='selected'>Sem aluno</option>");
+                    }
+                    else {
+                        $("#ddlAluno").append("<option value='' selected='selected'>Escolha o aluno</option>");
+                    }
+                    $.each(resultAluno, function (i, aluno) {
+                        $("#ddlAluno").append($('<option>').text(aluno.alunoNome).attr('value', aluno.idAluno));
+                    });
+                    //$("#ddlAluno").selectpicker('refresh');
+                    //$("#ddlAluno").selectpicker('render');
+                    DesativarProcessandoCadastro();
+            });
+        });
+    }
+
+    function GerarBoletim() {
+        ProcessandoCadastro();
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("Filtrar")',
+            data: { idPeriodo: $("#ddlPeriodo").val(), idTurma: $("#ddlTurma").val(), idAluno: $("#ddlAluno").val() },
+            success: function (result) {
+                try {
+                    $("#DivBoletim").html(result);
+                    DesativarProcessandoCadastro();
+                    console.clear();
+                } catch (e) {}
+            }
+        });
+    }
+
+    function GerarBoletimAluno() {
+        ProcessandoCadastro();
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("FiltrarAluno")',
+            data: { idPeriodo: $("#ddlPeriodoAluno").val(), idAluno: $("#HdnIdAluno").val() },
+            success: function (result) {
+                try {
+                    $("#DivBoletim").html(result);
+                    DesativarProcessandoCadastro();
+                    console.clear();
+                } catch (e) {}
+            }
+        });
+    }
+
+    function Limpar() {
+        $("#ddlAluno").empty();
+        $("#ddlAluno").append("<option value=''>Escolha a turma</option>");
+        $("#ddlAluno").val("");
+        //$("#ddlAluno").selectpicker('refresh');
+        //$("#ddlAluno").selectpicker('render');
+
+        $("#ddlTurma").empty();
+        $("#ddlTurma").append("<option value=''>Selecione um item</option>");
+        $("#ddlTurma").val("");
+        //$("#ddlTurma").selectpicker('refresh');
+        //$("#ddlTurma").selectpicker('render');
+
+        return false;
+    }
+</script>

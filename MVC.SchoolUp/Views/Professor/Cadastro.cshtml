@@ -1,0 +1,173 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmProfessor>
+
+@{
+    ViewBag.TituloPagina = "Professor";
+    Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Professor";
+    ViewBag.Action = "Cadastro";
+    ViewBag.View = "Professor";
+}
+
+<input asp-for="Dados.FirstOrDefault().EscolaProfessor.FirstOrDefault().IdEscola" type="hidden" value="@ViewBag.IdEscola" />
+<input asp-for="Dados.FirstOrDefault().Id" type="hidden" value="@ViewBag.Id" />
+
+<link href="~/lib/jquery-ui-1.12.1.custom/jquery-ui.css" rel="stylesheet" />
+<script src="~/lib/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
+
+<div class="row clearfix">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="body">
+                <ul class="nav nav-pills" role="tablist">
+                    <li id="LiHome" role="presentation" class="nav-item">
+                        <a href="#DivHome" class="nav-link active" data-toggle="tab" role="tab" aria-controls="home" aria-selected="true">
+                            <i class="fas fa-home"></i> Dados
+                        </a>
+                    </li>
+                    <li id="LiDisciplina" role="presentation">
+                        <a href="#DivDisciplinas" class="nav-link" data-toggle="tab" role="tab" aria-controls="notas" aria-selected="false">
+                            <i class="fas fa-book-open"></i> Disciplinas
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade show active" id="DivHome" aria-labelledby="LiHome">
+                        <div class="row clearfix">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="body">
+                                        <div class="row clearfix">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                                    <p>
+                                                        <b><label asp-for="Dados.FirstOrDefault().Nome" class="control-label col-indigo"></label></b>
+                                                    </p>
+                                                    <div class="form-line">
+                                                        <input asp-for="Dados.FirstOrDefault().Nome" class="form-control" placeholder="Digite o nome" autofocus="" aria-required="true" />
+                                                        <span asp-validation-for="Dados.FirstOrDefault().Nome" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row clearfix">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                                    <p>
+                                                        <b><label asp-for="Dados.FirstOrDefault().Email" class="control-label col-indigo"></label></b>
+                                                    </p>
+                                                    <div class="form-line">
+                                                        <input asp-for="Dados.FirstOrDefault().Email" class="form-control" placeholder="Digite o email" autofocus="" aria-required="true" />
+                                                        <span asp-validation-for="Dados.FirstOrDefault().Email" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade show" id="DivDisciplinas" aria-labelledby="LiDisciplinas">
+                        <div class="row clearfix">
+                            <div class="col-md-8">
+                                <div class="card">
+                                    <div class="body">
+                                        <div class="row clearfix">
+                                            <div class="col-md-5">
+                                                <p>
+                                                    <label class="control-label col-indigo">Disciplina</label>
+                                                </p>
+                                                <select id="ddlDisciplina" name="ddlDisciplina" class="form-control show-tick" asp-items="ViewBag.IdDisciplina">
+                                                    <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmaDisciplina</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <p>
+                                                    <label class="control-label col-indigo">&nbsp;</label>
+                                                </p>
+                                                <button id="BtnDisciplina" name="BtnDisciplina" class="btn btn-success">
+                                                    Inscrever&nbsp;&nbsp;<i class="far fa-edit"></i>
+                                                </button>
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <div id="DivProcessandoIndex" class="col-md-2 invisible">
+                                                    <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row clearfix">
+                                            <br />
+                                            <input id="HdnPrefixoFileName" type="hidden" value="GradeInscricao" name="HdnPrefixoFileName" />
+                                            <div class="col-md-12">
+                                                <div id="DivPartialGrade">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    Inscrever();
+    CarregarDisciplinas();
+    ActiveTab();
+});
+
+function ActiveTab() {
+    $("li[role='presentation']").click(function () {
+        var tabClicked = this;
+        $("li[role='presentation']").removeClass("active");
+        $("#" + this.id).addClass("active");
+    });
+}
+
+function CarregarDisciplinas() {
+    $.ajax({
+    type: 'GET',
+    url: '@Url.Action("GetGrade")',
+    data: { idProfessor: $("#Id").val() }
+    })
+    .done(function (resultGrade) {
+        $("#DivPartialGrade").html(resultGrade);
+    });
+}
+
+function Inscrever() {
+    $("#BtnDisciplina").click(function () {
+        ProcessandoIndex();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("Inscrever")',
+            data: { idDisciplina: $("#ddlDisciplina").val(), idProfessor: $("#Id").val() }
+        })
+        .done(function (result) {
+            $("#DivMensagem").html(result);
+            $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetGrade")',
+            data: { idProfessor: $("#Id").val() }
+            })
+            .done(function (resultGrade) {
+                $("#DivPartialGrade").html(resultGrade);
+                $("#ddlDisciplina").val("");
+                //$("#ddlDisciplina").selectpicker('render');
+                //$("#ddlDisciplina").selectpicker('refresh');
+                DesativarProcessandoIndex();
+            });
+        });
+        return false;
+    });
+}
+</script>

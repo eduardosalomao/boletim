@@ -1,0 +1,183 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmAvaliacao>
+
+@{
+    ViewBag.TituloPagina = "Calendário Prova";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Grade Turma";
+    ViewBag.Action = "Edicao";
+    ViewBag.View = "Avaliacao";
+}
+
+<script src="~/js/Processando.js"></script>
+
+<div class="form-group">
+
+    <div class="row clearfix">
+        <div class="col-md-2">
+            <p>
+                <label class="control-label col-indigo">Período</label>
+            </p>
+            <select id="ddlPeriodo" name="ddlPeriodo" class="form-control show-tick" asp-items="ViewBag.IdPeriodo"></select>
+        </div>
+        <div class="col-md-2">
+            <p>
+                <label class="control-label col-indigo">Bimestre</label>
+            </p>
+            <select id="ddlBimestre" name="ddlBimestre" class="form-control show-tick" asp-items="ViewBag.IdSubPeriodo"></select>
+        </div>
+        @if (@ViewBag?.Perfil?.Count > 0 && (@ViewBag.Perfil.Contains("SCHOOLUP_ADMIN") || @ViewBag.Perfil.Contains("SCHOOLUP_SECRETARIA")))
+        {
+            <div id="DivTurma" class="col-md-2">
+                <p>
+                    <label class="control-label col-indigo">Turma</label>
+                </p>
+                <select id="ddlTurma" name="ddlTurma" class="form-control show-tick" asp-items="ViewBag.IdTurma">
+                    <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmaTurma</option>
+                </select>
+            </div>
+            if (@ViewBag.Perfil.Contains("SCHOOLUP_ADMIN"))
+            {
+                <div class="col-md-2">
+                    <p>
+                        <label class="control-label col-indigo">&nbsp;</label>
+                    </p>
+                    <a id="BtnNovoLancamento" name="BtnNovoLancamento" href="~/Avaliacao/CadastroCalendario" onclick="ProcessandoIndex(); return true;" class="btn btn-success">
+                        <i class="far fa-file"></i>&nbsp;&nbsp;Novo Lançamento
+                    </a>
+                </div>
+            }
+        }
+    </div>
+    <div id="DivProcessandoIndex" class="col-md-2 invisible">
+        <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+    </div>
+</div>
+
+<div id="DivMensagem">
+    @{
+        Html.RenderPartial("JanelaMensagem");
+    }
+</div>
+<input id="HdnPrefixoFileName" type="hidden" value="CalendarioProva" name="HdnPrefixoFileName" />
+<input id="HdnStyleDisplay" type="hidden" value="" name="HdnStyleDisplay" />
+
+
+<div id="DivPartialGrade">
+</div>
+
+<script>
+    $(document).ready(function () {
+        ChangePeriodo();
+        ChangeTurma();
+        ChangeSubPeriodo();
+        if ($("#ddlBimestre").val() != null && $("#ddlBimestre").val() != "" && $("#ddlTurma").val() != null && $("#ddlTurma").val() != "") {
+            CarregarGrade();
+        }
+    });
+
+    function ChangePeriodo() {
+        $("#ddlPeriodo").change(function () {
+            ProcessandoIndex();
+            $("#ddlBimestre").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetSubPeriodo")',
+                dataType: 'json',
+                data: { idPeriodo: $("#ddlPeriodo").val() },
+                success: function (resultSubPeriodo) {
+                    if (resultSubPeriodo.dados == null) {
+                        $("#ddlBimestre").append("<option value=''>Sem bimestre</option>");
+                    }
+                    else {
+                        $("#ddlBimestre").append("<option value=''>Escolha o bimestre</option>");
+                    }
+                    $.each(resultSubPeriodo.dados, function (i, subPeriodo) {
+                        if (resultSubPeriodo.id == subPeriodo.id.toString()) {
+                            $("#ddlBimestre").append($('<option selected>').text(subPeriodo.nome).attr('value', subPeriodo.id));
+                        }
+                        else {
+                            $("#ddlBimestre").append($('<option>').text(subPeriodo.nome).attr('value', subPeriodo.id));
+                        }
+                    });
+                    //$("#ddlBimestre").selectpicker('refresh');
+                    //$("#ddlBimestre").selectpicker('render');
+                    //$("#BtnNovoLancamento").hide();
+                    DesativarProcessandoIndex();
+                },
+                error: function (ex) {
+                    DesativarProcessandoIndex();
+                    alert('Erro ao receber bimestres');
+                }
+            });
+
+            $("#ddlTurma").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetTurmas")',
+                dataType: 'json',
+                data: { idPeriodo: $("#ddlPeriodo").val() },
+                success: function (resultTurma) {
+                    if (resultTurma == null) {
+                        $("#ddlTurma").append("<option value=''>Sem turma</option>");
+                    }
+                    else {
+                        $("#ddlTurma").append("<option value=''>Escolha a turma</option>");
+                    }
+                    $.each(resultTurma, function (i, turma) {
+                        $("#ddlTurma").append($('<option>').text(turma.nome).attr('value', turma.id));
+                    });
+                    //$("#ddlTurma").selectpicker('refresh');
+                    //$("#ddlTurma").selectpicker('render');
+                    //$("#BtnNovoLancamento").hide();
+                    DesativarProcessandoIndex();
+                },
+                error: function (ex) {
+                    DesativarProcessandoIndex();
+                    alert('Erro ao receber turmas');
+                }
+            });
+
+            return false;
+        });
+    }
+
+    function ChangeSubPeriodo() {
+        $("#ddlBimestre").change(function () {
+            CarregarGrade();
+            return false;
+        });
+    }
+
+    function ChangeTurma() {
+        $("#ddlTurma").change(function () {
+            CarregarGrade();
+            return false;
+        });
+    }
+
+    function CarregarGrade() {
+        ProcessandoIndex();
+        var valTurma = $("#ddlTurma").val();
+        var valBimestre = $("#ddlBimestre").val();
+        $("#HdnStyleDisplay").val("@TempData["StyleDisplay"]");
+        if (valTurma == null || valTurma == "" || valBimestre == null || valBimestre == "") {
+            //$("#BtnNovoLancamento").hide();
+            DesativarProcessandoIndex();
+        }
+        else {
+            //if ($("#HdnStyleDisplay").val() != " style=display:none!important; ") {
+            //    $("#BtnNovoLancamento").show();
+            //}
+            //document.getElementById('BtnNovoLancamento').href = "Avaliacao/Cadastro/" + valTurma + "/" + valBimestre;
+
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetGrade")',
+                data: { idTurma: valTurma, idSubPeriodo: valBimestre }
+            })
+            .done(function (result) {
+                $("#DivPartialGrade").html(result);
+                DesativarProcessandoIndex();
+            });
+        }
+    }
+</script>

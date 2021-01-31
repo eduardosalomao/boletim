@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Erro";
+}
+
+<section id="main" class="clearfix text-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+                <div class="found-section section">
+                    <h2 style="color:red">Opsss!</h2>
+                    <br />
+                    <p>
+                        @Html.Label("LblCodigo", (string)@ViewBag.LblCodigo)
+                    </p>
+                    <p>
+                        @Html.Label("LblMensagem", (string)@ViewBag.LblMensagem)
+                    </p>
+                    <a href="javascript:history.back();" class="btn btn-primary">Voltar</a>
+                </div>
+            </div>
+        </div>
+    </div><!-- container -->
+</section><!-- main -->

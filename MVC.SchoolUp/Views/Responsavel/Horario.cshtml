@@ -1,0 +1,116 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmDisciplinaHorario>
+
+@{
+    ViewBag.TituloPagina = "Grade Turma";
+    //Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Grade Turma";
+    ViewBag.Action = "Edicao";
+    ViewBag.View = "DisciplinaHorario";
+}
+
+<script src="~/js/grade.js"></script>
+
+<div class="form-group">
+
+
+    <input id="HdnIdAluno" type="hidden" value="@ViewBag.IdAluno" name="HdnIdAluno" />
+    <div id="DivFiltro" class="row clearfix">
+        <div class="col-md-2">
+            <p>
+                <label class="control-label col-indigo">Período</label>
+            </p>
+            <select id="ddlPeriodo" name="ddlPeriodo" class="form-control show-tick" asp-items="ViewBag.IdPeriodo"></select>
+        </div>
+        <div class="col-md-2">
+            <p>
+                <label class="control-label col-indigo">Turma</label>
+            </p>
+            <select id="ddlTurma" name="ddlTurma" class="form-control show-tick" asp-items="ViewBag.IdTurma">
+            </select>
+        </div>
+    </div>
+
+    <div id="DivProcessandoIndex" class="col-md-2 invisible">
+        <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+    </div>
+</div>
+
+<div id="DivMensagem">
+    @{
+        Html.RenderPartial("JanelaMensagem");
+    }
+</div>
+<input id="HdnPrefixoFileName" type="hidden" value="" name="HdnPrefixoFileName" />
+
+<div class="card">
+    <div id="DivPartialGrade">
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#BtnEditarGrade").hide();
+        if ($("#ddlPeriodo").val() != null && $("#ddlTurma").val() != "") {
+            GetGrade();
+        }
+
+        ChangeTurma();
+        ChangePeriodo();
+    });
+
+    function ChangePeriodo() {
+        $("#ddlPeriodo").change(function () {
+            ProcessandoIndex();
+            $("#ddlTurma").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetTurmas")',
+                dataType: 'json',
+                data: { idPeriodo: $("#ddlPeriodo").val(), idAluno: $("#HdnIdAluno").val() },
+                success: function (resultTurma) {
+                    if (resultTurma == null) {
+                        $("#ddlTurma").append("<option value=''>Sem turma</option>");
+                    }
+                    else {
+                        $("#ddlTurma").append("<option value=''>Escolha a turma</option>");
+                    }
+                    $.each(resultTurma, function (i, turma) {
+                        $("#ddlTurma").append($('<option>').text(turma.turmaNome).attr('value', turma.idTurma));
+                    });
+                    //$("#ddlTurma").selectpicker('refresh');
+                    //$("#ddlTurma").selectpicker('render');
+                    $("#BtnEditarGrade").hide();
+                    DesativarProcessandoIndex();
+                },
+                error: function (ex) {
+                    DesativarProcessandoIndex();
+                    alert('Erro ao receber turmas');
+                }
+            });
+
+            return false;
+        });
+    }
+
+    function ChangeTurma() {
+        $("#ddlTurma").change(function () {
+           GetGrade()
+        });
+    }
+
+    function GetGrade() {
+        ProcessandoIndex();
+        var val = $("#ddlTurma").val();
+        $("#HdnPrefixoFileName").val("Turma " + $("#ddlTurma option:selected").text());
+        
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetHorario")',
+            data: { idTurma: $("#ddlTurma").val() }
+        })
+        .done(function (result) {
+            $("#DivPartialGrade").html(result);
+            DesativarProcessandoIndex();
+        });
+    }
+</script>

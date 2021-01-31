@@ -1,0 +1,257 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmNotas>
+
+@{
+    ViewBag.TituloPagina = "Grade Turma";
+    //Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Grade Turma";
+    ViewBag.Action = "Edicao";
+    ViewBag.View = "DisciplinaHorario";
+}
+
+<link href="~/lib/data-tables/datatables.min.css" rel="stylesheet" />
+<link href="~/lib/data-tables/DataTables-1.10.20/css/dataTables.bootstrap4.css" rel="stylesheet" />
+
+<script src="~/lib/data-tables/datatables.min.js"></script>
+<script src="~/lib/data-tables/DataTables-1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="~/lib/data-tables/DataTables-1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/buttons.html5.min.js"></script>
+
+<script src="~/lib/inputmask/dist/min/jquery.inputmask.bundle.min.js"></script>
+<script src="~/js/media.js"></script>
+
+<input id="HdnPrefixoFileName" type="hidden" value="@Model.Dados.FirstOrDefault().Turma - @Model.Dados.FirstOrDefault().Disciplina - @Model.Dados.FirstOrDefault().Bimestre" name="HdnPrefixoFileName" />
+
+<div id="DivMensagem">
+</div>
+@{
+    if (Model.Dados?.Count > 0)
+    {
+        <div class="card" style="overflow-x: auto;">
+            <div class="body">
+                <b>@Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Turma):</b>&nbsp;@Html.DisplayFor(model => model.Dados.FirstOrDefault().Turma)
+                <br />
+                <b>@Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Disciplina):</b>&nbsp;@Html.DisplayFor(model => model.Dados.FirstOrDefault().Disciplina)
+                <br />
+                <br />
+                <div class="table table-striped w-auto">
+                    <table id="GridIndex" class="table table-bordered table-striped table-hover dataTable">
+                        <thead>
+                            <tr>
+                                <th class="d-none d-sm-table-cell">
+                                    Número
+                                </th>
+                                <th class="d-none d-sm-table-cell">
+                                    @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().MatriculaAluno)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().NomeAluno)
+                                </th>
+                                <th style="width:50px!important" class="mx-auto">
+                                    @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Nota)
+                                </th>
+                                @if (!Model.Dados.FirstOrDefault().IdBimestre.ToString().StartsWith("00000000"))
+                                {
+                                    <th style="width:50px!important" class="mx-auto">
+                                        Recupe<br />ração
+                                    </th>
+                                    <th style="width:50px!important" class="mx-auto">
+                                        @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Faltas)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Nota)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().NotaRecuperacao)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Faltas)
+                                    </th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int linha = 0;
+                            }
+                            @foreach (var item in Model.Dados)
+                            {
+                                linha++;
+                                <tr class="btnExcluir" id="@item.Id" data-id="@item.Id">
+                                    <td class="d-none d-sm-table-cell">
+                                        @Html.DisplayFor(modelItem => linha)
+                                    </td>
+                                    <td class="d-none d-sm-table-cell">
+                                        @Html.DisplayFor(modelItem => item.MatriculaAluno)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.NomeAluno)
+                                    </td>
+                                    <td>
+                                        @{
+                                            if (ViewBag.Perfil.Contains("SCHOOLUP_ADMIN"))
+                                            {
+                                                string nota = item.Nota == null ? "" : item.Nota.Value.ToString("##.0").Replace(",", "");
+                                                @Html.TextBoxFor(modelItem => nota, new { @class = "form-control nota", placeholder = "Ex: 8,5" })
+                                            }
+                                            else
+                                            {
+                                                string nota = item.Nota == null ? "" : item.Nota.Value.ToString("##.0");
+                                                @Html.DisplayFor(modelItem => nota)
+                                            }
+
+                                        }
+                                    </td>
+                                    @if (!Model.Dados.FirstOrDefault().IdBimestre.ToString().StartsWith("00000000"))
+                                    {
+                                <td>
+                                    @{
+                                        if (ViewBag.Perfil.Contains("SCHOOLUP_ADMIN"))
+                                        {
+                                            string notaRecuperacao = item.NotaRecuperacao == null ? "" : item.NotaRecuperacao.Value.ToString("##.0").Replace(",", "");
+                                            @Html.TextBoxFor(modelItem => notaRecuperacao, new { @class = "form-control notaRecuperacao", placeholder = "Ex: 8,5" })
+                                        }
+                                        else
+                                        {
+                                            string notaRecuperacao = item.NotaRecuperacao == null ? "" : item.NotaRecuperacao.Value.ToString("##.0");
+                                            @Html.DisplayFor(modelItem => notaRecuperacao)
+                                        }
+                                    }
+                                </td>
+                                <td>
+                                    @if (ViewBag.Perfil.Contains("SCHOOLUP_ADMIN"))
+                                    {
+                                        @Html.TextBoxFor(modelItem => item.Faltas, new { @class = "form-control faltas", placeholder = "Nº Faltas" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DisplayFor(modelItem => item.Faltas)
+                                    }
+                                </td>
+                                        <td>
+                                            @{
+                                                string notaReadOnly = item.Nota == null ? "" : item.Nota.Value.ToString("##.0");
+                                                @Html.DisplayFor(modelItem => notaReadOnly)
+                                            }
+                                        </td>
+                                        <td>
+                                            @{
+                                                string notaRecuperacaoReadOnly = item.NotaRecuperacao == null ? "" : item.NotaRecuperacao.Value.ToString("##.0");
+                                                @Html.DisplayFor(modelItem => notaRecuperacaoReadOnly)
+                                            }
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Faltas, new { @class = "form-control faltas", placeholder = "Nº Faltas" })
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>
+            @ViewBag.LblMensagemGrid
+        </p>
+    }
+}
+<div class="form-row col-md-12 center-block text-center" style="text-align:center;">
+    <a href="@Url.Action("Disciplina")" formnovalidate="formnovalidate" onclick="ProcessandoCadastro(); return true;" class="btn text-info col-md-1 BtnCadastro">
+        <i class="fas fa-backward"></i>&nbsp;&nbsp;Voltar
+    </a>
+    <div id="DivProcessandoIndex" class="col-md-2 invisible">
+        <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+    </div>
+</div>
+
+@if (ViewBag.Perfil.Contains("SCHOOLUP_ADMIN"))
+{
+    <script>
+    $(document).ready(function () {
+        $('.faltas').inputmask('99', { placeholder: '', numericInput: true  });
+        $('.notaRecuperacao').inputmask('99,9', { placeholder: '', numericInput: true });
+        $('.nota').inputmask('99,9', { placeholder: '', numericInput: true  });
+        ChangeNota();
+        ChangeNotaRecuperacao();
+        ChangeFaltas();
+    });
+
+    function ChangeNota() {
+        $(".nota").on('change', function (e) {
+            ProcessandoIndex();
+            e.preventDefault();
+            var id = $(this).closest('tr').data('id');
+            var campo = document.getElementById(this.id);
+            var valorNota = this.value;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GravarNota")',
+                data: { idNota: id, nota: valorNota }
+            })
+                .done(function (result) {
+                $("#DivMensagem").html(result);
+                if (result.indexOf("DivMensagensErro") >= 0) {
+                    campo.focus();
+                    campo.select();
+                }
+                DesativarProcessandoIndex();
+            });
+
+            return false;
+        });
+    }
+
+    function ChangeNotaRecuperacao() {
+        $(".notaRecuperacao").on('change', function (e) {
+            ProcessandoIndex();
+            e.preventDefault();
+            var id = $(this).closest('tr').data('id');
+            var campo = document.getElementById(this.id);
+            var valorNota = this.value;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GravarNotaRecuperacao")',
+                data: { idNota: id, notaRecuperacao: valorNota }
+            })
+                .done(function (result) {
+                $("#DivMensagem").html(result);
+                if (result.indexOf("DivMensagensErro") >= 0) {
+                    campo.focus();
+                    campo.select();
+                }
+                DesativarProcessandoIndex();
+            });
+
+            return false;
+        });
+    }
+
+    function ChangeFaltas() {
+        $(".faltas").on('change', function (e) {
+            ProcessandoIndex();
+            e.preventDefault();
+            var id = $(this).closest('tr').data('id');
+            var valorFaltas = this.value;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GravarFaltas")',
+                data: { idNota: id, faltas: valorFaltas }
+            })
+                .done(function (result) {
+                $("#DivMensagem").html(result);
+                if (result.indexOf("DivMensagensErro") >= 0) {
+                    campo.focus();
+                    campo.select();
+                }
+                DesativarProcessandoIndex();
+            });
+
+            return false;
+        });
+    }
+    </script>
+}

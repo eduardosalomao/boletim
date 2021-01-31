@@ -1,0 +1,201 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmNotas>
+
+@{
+    ViewBag.TituloPagina = "Grade Turma";
+    //Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Grade Turma";
+    ViewBag.Action = "Edicao";
+    ViewBag.View = "DisciplinaHorario";
+}
+
+<link href="~/lib/data-tables/datatables.min.css" rel="stylesheet" />
+<link href="~/lib/data-tables/DataTables-1.10.20/css/dataTables.bootstrap4.css" rel="stylesheet" />
+
+<script src="~/lib/data-tables/datatables.min.js"></script>
+<script src="~/lib/data-tables/DataTables-1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="~/lib/data-tables/DataTables-1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/buttons.html5.min.js"></script>
+<script src="~/js/importar.js"></script>
+
+
+@*asp-controller="Avaliacao" asp-action="Importar"*@
+<form method="post" data-ajax="true" data-ajax-method="POST" data-ajax-begin="onBegin" data-ajax-complete="onComplete"
+      data-ajax-mode="replace" data-ajax-update="#DivMensagem"
+      enctype="multipart/form-data">
+
+    <div id="DivMensagem">
+    </div>
+
+    @{
+        if (Model.Dados?.Count > 0)
+        {
+
+            if (ViewBag.FolderName != null)
+            {
+                <div class="card" style="overflow-x:auto">
+                    <div class="body text-info">
+                        <p><b>Caso o download não inicie, clique no link abaixo para baixar a planilha com os resultados da importação.</b></p>
+                        <br />
+                        <p class="text-center"><a id="LinkDownload" data-auto-download href="~/Avaliacao/Exportar/@ViewBag.FolderName/@ViewBag.FileName" download>Resultado da importação: @ViewBag.FileName</a></p>
+                    </div>
+                </div>
+                <script type="text/javascript">
+                    DesativarProcessandoIndex();
+                    alert("Importação concluída. Confira na tabela se as notas foram alteradas ou abra a planlha para ver o resultado da importação por aluno.");
+                    $(function() {
+                        $('a[data-auto-download]').each(function(){
+                            var $this = $(this);
+                            setTimeout(function() {
+                            window.location = $this.attr('href');
+                            }, 2000);
+                        });
+                    });
+                    //$("#LinkDownload").click();
+                </script>
+            }
+
+            <div class="card" style="overflow-x:auto">
+                <div class="body">
+                    <b>@Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Turma):</b>&nbsp;@Html.DisplayFor(model => model.Dados.FirstOrDefault().Turma)
+                    <br />
+                    <b>@Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Disciplina):</b>&nbsp;@Html.DisplayFor(model => model.Dados.FirstOrDefault().Disciplina)
+                    <br />
+                    <br />
+                    <div class="form-row">
+                        <a href="@Url.Action("Exportar", new { idAvaliacao = Model.Dados.FirstOrDefault().IdAvaliacao.ToString() })" formnovalidate="formnovalidate" class="btn text-info col-md-1 BtnCadastro">
+                            <i class="fas fa-download"></i>&nbsp;&nbsp;Exportar
+                        </a>
+                        <div id="DivProcessandoIndex" class="col-md-2 invisible">
+                            <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <input type="file" class="custom-file" id="inputFile" name="inputFile" aria-describedby="fileHelp" style="width:500px!important">&nbsp;&nbsp;&nbsp;
+
+                        <button type="submit" id="BtnImportar" name="BtnImportar" onclick="ProcessandoIndex(); return true;" class="btn text-info col-md-1 BtnCadastro">
+                            <i class="fas fa-upload"></i>&nbsp;&nbsp;Importar
+                        </button>
+                    </div>
+                    <div class="form-row">
+                        <p>
+                            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                Instruções
+                            </button>
+                        </p>
+                        <div class="collapse" id="collapseExample">
+                            <div class="card card-body">
+                                <p>Para realizar a importação de notas siga os seguintes passos:</p>
+                                <p>Clique em exportar para baixar a planilha com os dados da turma.</p>
+                                <p>Abra a planilha e altere as notas dos alunos. Salve e feche o documento</p>
+                                <p>Clique em Escolher arquivo, selecione a planilha com as notas e clique em Importar</p>
+                                <p>Após concluída, verifique os dados na planilha ou na tabela.</p>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="form-row">
+                        <div class="table table-striped w-auto">
+                            <table id="GridIndex" class="table table-bordered table-striped table-hover dataTable">
+                                <thead>
+                                    <tr>
+                                        <th class="d-none d-sm-table-cell">
+                                            Número
+                                        </th>
+                                        <th class="d-none d-sm-table-cell">
+                                            @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().MatriculaAluno)
+                                        </th>
+                                        <th>
+                                            Nome
+                                        </th>
+                                        <th style="width:50px!important" class="mx-auto">
+                                            @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Nota)
+                                        </th>
+                                        <th style="width:50px!important" class="mx-auto">
+                                            @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().NotaRecuperacao)
+                                        </th>
+                                        <th style="width:50px!important" class="mx-auto">
+                                            @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Faltas)
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ int linha = 0;
+                                    }
+                                    @foreach (var item in Model.Dados)
+                                    {
+                                        linha++;
+                                        <tr class="btnExcluir" id="@item.Id" data-id="@item.Id">
+                                            <td class="d-none d-sm-table-cell">
+                                                @Html.DisplayFor(modelItem => linha)
+                                            </td>
+                                            <td class="d-none d-sm-table-cell">
+                                                @Html.DisplayFor(modelItem => item.MatriculaAluno)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.NomeAluno)
+                                            </td>
+                                            <td>
+                                                @{
+                                                    string notaReadOnly = item.Nota == null ? "" : item.Nota.Value.ToString("##.0");
+                                                    @Html.DisplayFor(modelItem => notaReadOnly)
+                                                }
+                                            </td>
+                                            <td>
+                                                @{
+                                                    string notaRecuperacaoReadOnly = item.NotaRecuperacao == null ? "" : item.NotaRecuperacao.Value.ToString("##.0");
+                                                    @Html.DisplayFor(modelItem => notaRecuperacaoReadOnly)
+                                                }
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Faltas)
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p>
+                @ViewBag.LblMensagemGrid
+            </p>
+        }
+    }
+    <div class="form-row col-md-12 center-block text-center" style="text-align: center;">
+        <a href="@Url.Action("ImportarIndex")" formnovalidate="formnovalidate" onclick="ProcessandoIndex(); return true;" class="btn text-info col-md-1 BtnCadastro">
+            <i class="fas fa-backward"></i>&nbsp;&nbsp;Voltar
+        </a>
+    </div>
+</form>
+
+@*<script>
+        function UploadArquivo(nomeLink) {
+            $("#BtnImportar").click(function () {
+                Importar();
+                alert("Importação concluída3");
+                return false;
+            });
+        }
+
+        async function Importar(nomeLink) {
+            ProcessandoIndex();
+
+            await $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ImportarNotas")',
+                data: {"idAvaliacao": '@Model.Dados.FirstOrDefault().IdAvaliacao.ToString()', "linkName": nomeLink}
+            })
+            .done(function (result) {
+                alert("Importação concluída1");
+                DesativarProcessandoIndex();
+            });
+
+            alert("Importação concluída2");
+        }
+    </script>*@

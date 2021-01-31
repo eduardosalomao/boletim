@@ -1,0 +1,206 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmNotas>
+
+<link href="~/lib/data-tables/datatables.min.css" rel="stylesheet" />
+<link href="~/lib/data-tables/DataTables-1.10.20/css/dataTables.bootstrap4.css" rel="stylesheet" />
+
+<script src="~/lib/data-tables/datatables.min.js"></script>
+<script src="~/lib/data-tables/DataTables-1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="~/lib/data-tables/DataTables-1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/buttons.html5.min.js"></script>
+<script src="~/js/aluno.js"></script>
+
+<div id="DivMensagem">
+</div>
+@{
+    if (Model.Dados?.Count > 0)
+    {
+        <input id="HdnPrefixoFileName" type="hidden" value="@Model.Dados.FirstOrDefault().Periodo - @Model.Dados.FirstOrDefault().NomeAluno" name="HdnPrefixoFileName" />
+
+        Model.Dados = Model.Dados.OrderBy(o => o.Bimestre).ThenBy(o => o.Disciplina).ToList();
+        <div class="body">
+            <b>@Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Turma):</b>&nbsp;@Html.DisplayFor(model => model.Dados.FirstOrDefault().Turma)
+            <div class="table table-striped w-auto">
+                <table id="GridNotaAluno" class="table table-bordered table-striped table-hover dataTable">
+                    <thead>
+                        <tr>
+                            <th class="col-xs-1">
+                                @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Periodo)
+                            </th>
+                            <th class="col-xs-2">
+                                @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Bimestre)
+                            </th>
+                            <th class="col-xs-4">
+                                @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Disciplina)
+                            </th>
+                            <th class="col-xs-2">
+                                @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Nota)
+                            </th>
+                            @if (!Model.Dados.FirstOrDefault().IdBimestre.ToString().StartsWith("00000000"))
+                            {
+                                <th class="col-xs-2">
+                                    @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().NotaRecuperacao)
+                                </th>
+                                <th class="col-xs-1">
+                                    @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Faltas)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Nota)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().NotaRecuperacao)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Faltas)
+                                </th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Dados)
+                        {
+                            int linha = 0;
+                            linha++;
+                            <tr class="btnExcluir" id="@item.Id" data-id="@item.Id">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Periodo)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Bimestre)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Disciplina)
+                                </td>
+                                <td>
+                                    @{
+                                        string nota = item.Nota == null ? "" : item.Nota.Value.ToString("#0.0").Replace(",", "");
+                                        @Html.TextBoxFor(modelItem => nota, new { @id = "nota" + item.Id, @Name = "nota" + item.Id, @class = "form-control nota", placeholder = "Ex: 8,5" })
+                                    }
+                                </td>
+                                @if (!Model.Dados.FirstOrDefault().IdBimestre.ToString().StartsWith("00000000"))
+                                {
+                                    <td>
+                                        @{
+                                            string notaRecuperacao = item.NotaRecuperacao == null ? "" : item.NotaRecuperacao.Value.ToString("#0.0").Replace(",", "");
+                                            @Html.TextBoxFor(modelItem => notaRecuperacao, new { @id = "notaRecuperacao" + item.Id, @Name = "notaRecuperacao" + item.Id, @class = "form-control notaRecuperacao", placeholder = "Ex: 8,5" })
+                                        }
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(modelItem => item.Faltas, new { @id = "faltas" + item.Id, @Name = "faltas" + item.Id, @class = "form-control faltas", placeholder = "Nº Faltas" })
+                                    </td>
+                                    <td>
+                                        @{
+                                            string notaReadOnly = item.Nota == null ? "" : item.Nota.Value.ToString("#0.0");
+                                            @Html.DisplayFor(modelItem => notaReadOnly)
+                                        }
+                                    </td>
+                                    <td>
+                                        @{
+                                            string notaRecuperacaoReadOnly = item.NotaRecuperacao == null ? "" : item.NotaRecuperacao.Value.ToString("#0.0");
+                                            @Html.DisplayFor(modelItem => notaRecuperacaoReadOnly)
+                                        }
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Faltas)
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>
+            @ViewBag.LblMensagemGrid
+        </p>
+    }
+}
+
+<script>
+    $(document).ready(function () {
+        $('.faltas').inputmask('99', { placeholder: '', numericInput: true  });
+        $('.notaRecuperacao').inputmask('99,9', { placeholder: '', numericInput: true });
+        $('.nota').inputmask('99,9', { placeholder: '', numericInput: true  });
+        ChangeNota();
+        ChangeNotaRecuperacao();
+        ChangeFaltas();
+    });
+
+    function ChangeNota() {
+        $(".nota").on('change', function (e) {
+            ProcessandoIndex();
+            e.preventDefault();
+            var id = $(this).closest('tr').data('id');
+            var campo = document.getElementById(this.id);
+            var valorNota = this.value;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GravarNota", "Aluno")',
+                data: { idNota: id, nota: valorNota }
+            })
+                .done(function (result) {
+                $("#DivMensagem").html(result);
+                if (result.indexOf("DivMensagensErro") >= 0) {
+                    campo.focus();
+                    campo.select();
+                }
+                DesativarProcessandoIndex();
+            });
+
+            return false;
+        });
+    }
+
+    function ChangeNotaRecuperacao() {
+        $(".notaRecuperacao").on('change', function (e) {
+            ProcessandoIndex();
+            e.preventDefault();
+            var id = $(this).closest('tr').data('id');
+            var campo = document.getElementById(this.id);
+            var valorNota = this.value;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GravarNotaRecuperacao", "Aluno")',
+                data: { idNota: id, notaRecuperacao: valorNota }
+            })
+                .done(function (result) {
+                $("#DivMensagem").html(result);
+                if (result.indexOf("DivMensagensErro") >= 0) {
+                    campo.focus();
+                    campo.select();
+                }
+                DesativarProcessandoIndex();
+            });
+
+            return false;
+        });
+    }
+
+    function ChangeFaltas() {
+        $(".faltas").on('change', function (e) {
+            ProcessandoIndex();
+            e.preventDefault();
+            var id = $(this).closest('tr').data('id');
+            var valorFaltas = this.value;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GravarFaltas", "Aluno")',
+                data: { idNota: id, faltas: valorFaltas }
+            })
+                .done(function (result) {
+                $("#DivMensagem").html(result);
+                if (result.indexOf("DivMensagensErro") >= 0) {
+                    campo.focus();
+                    campo.select();
+                }
+                DesativarProcessandoIndex();
+            });
+
+            return false;
+        });
+    }
+</script>

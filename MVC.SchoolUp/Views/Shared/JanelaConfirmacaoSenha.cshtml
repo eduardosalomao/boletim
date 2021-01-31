@@ -1,0 +1,41 @@
+﻿<div class="modal fade in" id="ConfirmModal" tabindex="-1" role="dialog" aria-labelledby="ConfirmModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ConfirmModalLabel">Atenção</h4>
+            </div>
+            <div class="modal-body">
+                Deseja redefinir a senha?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" id="BtnConfirm" onclick="ProcessandoCadastro(); return true;">Confirmar</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('button.btnSenha').on('click', function (e) {
+        e.preventDefault();
+        var id = $('#HdnEmail').val();
+        $('#ConfirmModal').data('id', id).modal('show');
+    });
+
+    $('#BtnConfirm').click(function () {
+        var id = $('#ConfirmModal').data('id');
+        $('#ConfirmModal').addClass('loading');
+        $.ajax({
+            url: '@Url.Action("EnviarSenha")',
+            type: 'POST',
+            data: { id: id }
+        })
+            .done(function (mensagem) {
+            $("#DivMensagem").html(mensagem);
+            $('#ConfirmModal').modal('hide').removeClass('loading');
+        })
+            .fail(function (mensagem) {
+            $("#DivMensagem").html(mensagem);
+        });
+    });
+</script>

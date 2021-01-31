@@ -1,0 +1,111 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmNovoAcesso>
+
+@{
+    ViewBag.TituloPagina = "Novo Acesso";
+    Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Aluno";
+    ViewBag.Action = "Novo";
+    ViewBag.View = "Aluno";
+}
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="row clearfix">
+    <input asp-for="Dados.FirstOrDefault().IdEscola" type="hidden" value="@ViewBag.IdEscola" />
+    <input asp-for="Dados.FirstOrDefault().IdUsuario" type="hidden" value="@ViewBag.IdUsuario" />
+    <div class="col-md-6">
+        <div class="card">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="body">
+                <h4 class="col-indigo">Dados do Aluno</h4>
+                <hr style="height:1px; background-color:indigo" />
+                <div class="row clearfix">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().IdTurma" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <select asp-for="Dados.FirstOrDefault().IdTurma" class="form-control show-tick" asp-items="ViewBag.IdTurma" placeholder="@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem">
+                                    <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+                                </select>
+                                <span asp-validation-for="Dados.FirstOrDefault().IdTurma" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().IdAluno" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <select asp-for="Dados.FirstOrDefault().IdAluno" class="form-control show-tick" placeholder="@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem">
+                                    <option value="" selected="selected">Selecione uma turma</option>
+                                </select>
+                                <span asp-validation-for="Dados.FirstOrDefault().IdAluno" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                        <div class="row clearfix">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <p>
+                                        <b><label asp-for="Dados.FirstOrDefault().Matricula" class="control-label col-indigo"></label></b>
+                                    </p>
+                                    <div class="form-line">
+                                        <input id="HdnEmail" name="HdnEmail" value="@ViewBag.Matricula" type="hidden" />
+                                        <input asp-for="Dados.FirstOrDefault().Matricula" class="form-control" placeholder="Digite a matrícula" autofocus="" aria-required="true" />
+                                        <span asp-validation-for="Dados.FirstOrDefault().Matricula" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <p>
+                                        <b><label asp-for="Dados.FirstOrDefault().DataNascimento" class="control-label col-indigo"></label></b>
+                                    </p>
+                                    <div class="form-line">
+                                        <input asp-for="Dados.FirstOrDefault().DataNascimento" placeholder="dd/mm/aaaa" class="form-control" aria-required="true" />
+                                        <span asp-validation-for="Dados.FirstOrDefault().DataNascimento" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        document.getElementById('BtnCadastroNovo').href = "Novo";
+        document.getElementById('BtnCadastroVoltar').href = "Mudar";
+        ChangeTurma();
+    });
+
+    function ChangeTurma() {
+        $("#IdTurma").change(function () {
+            ProcessandoCadastro();
+            $("#IdAluno").empty();
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetAlunos")',
+                data: { idTurma: $("#IdTurma").val() }
+            })
+                .done(function (resultAluno) {
+                    if (resultAluno == null) {
+                        $("#IdAluno").append("<option value='' selected='selected'>Sem aluno</option>");
+                    }
+                    else {
+                        $("#IdAluno").append("<option value='' selected='selected'>Escolha o aluno</option>");
+                    }
+                    $.each(resultAluno, function (i, aluno) {
+                        $("#IdAluno").append($('<option>').text(aluno.alunoNome).attr('value', aluno.idAluno));
+                    });
+                    //$("#IdAluno").selectpicker('refresh');
+                    //$("#IdAluno").selectpicker('render');
+                    DesativarProcessandoCadastro();
+            });
+        });
+    }
+</script>

@@ -1,0 +1,257 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Principal.Avaliacao>
+
+@{
+    ViewBag.TituloPagina = "Calendário";
+    Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Calendário";
+    ViewBag.Action = "CadastroCalendario";
+    ViewBag.View = "Avaliacao";
+}
+
+<script src="~/lib/jquery-inputmask/jquery.inputmask.min.js"></script>
+<script src="~/lib/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+<script src="~/lib/moment/moment-with-locales.js"></script>
+
+<input asp-for="Dados.FirstOrDefault().Id" type="hidden" value="@ViewBag.Id" />
+<div class="row clearfix">
+    <div id="DivMensagemCalendario">
+        @{
+            Html.RenderPartial("JanelaMensagemCalendario");
+        }
+    </div>
+
+    <div id="DivProcessandoIndex" class="col-md-2 invisible">
+        <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+    </div>
+
+    <div class="col-md-12">
+        <div class="card">
+            <div class="body">
+                <div class="row clearfix">
+                    <div class="col-md-2">
+                        <p>
+                            <label class="control-label col-indigo">Período</label>
+                        </p>
+                        <select id="ddlPeriodo" name="ddlPeriodo" class="form-control show-tick" asp-items="ViewBag.IdPeriodo"></select>
+                    </div>
+                    <div class="col-md-2">
+                        <p>
+                            <label class="control-label col-indigo">Bimestre</label>
+                        </p>
+                        <select id="IdSubPeriodo" name="IdSubPeriodo" class="form-control show-tick" asp-items="ViewBag.IdSubPeriodo">
+                            <option value="" selected="selected">Escolha o bimestre</option>
+                        </select>
+                        <span asp-validation-for="Dados.FirstOrDefault().IdSubPeriodo" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-2">
+                        <p>
+                            <label class="control-label col-indigo">Turma</label>
+                        </p>
+                        <select asp-for="Dados.FirstOrDefault().IdTurma" class="form-control show-tick" asp-items="ViewBag.IdTurma">
+                            <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmaTurma</option>
+                        </select>
+                        <span asp-validation-for="Dados.FirstOrDefault().IdTurma" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-4">
+                        <p>
+                            <label asp-for="Dados.FirstOrDefault().IdTipoAvaliacao" class="control-label col-indigo"></label>
+                        </p>
+                        <select asp-for="Dados.FirstOrDefault().IdTipoAvaliacao" placeholder="@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem" class="form-control show-tick">
+                            <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+                            @foreach (Modelo.SchoolUp.Principal.TipoAvaliacao tipoAvaliacao in (List<Modelo.SchoolUp.Principal.TipoAvaliacao>)ViewBag.IdTipoAvaliacaoPuro)
+                            {
+                                <option value="@tipoAvaliacao.Id" data-tempo="@tipoAvaliacao.TempoPadraoMinutos">
+                                    @tipoAvaliacao.Nome
+                                </option>
+                            }
+                        </select>
+                        <span asp-validation-for="Dados.FirstOrDefault().IdTipoAvaliacao" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Sigla" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Sigla" class="form-control" placeholder="Digite a sigla do teste" autofocus="" aria-required="true" />
+                            </div>
+                            <span asp-validation-for="Dados.FirstOrDefault().Sigla" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-5">
+                        <p>
+                            <label asp-for="Dados.FirstOrDefault().IdProfessorDisciplina" class="control-label col-indigo"></label>
+                        </p>
+                        <select asp-for="Dados.FirstOrDefault().IdProfessorDisciplina" class="form-control show-tick" asp-items="ViewBag.IdProfessorDisciplina" placeholder="@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem">
+                            <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+                        </select>
+                        <span asp-validation-for="Dados.FirstOrDefault().IdProfessorDisciplina" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-2 demo-masked-input">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().De" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().De" placeholder="dd/mm/aaaa hh:mm" data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy HH:MM"
+                                       data-inputmask-placeholder="dd/mm/aaaa hh:mm" class="form-control" aria-required="true" />
+                            </div>
+                            <span asp-validation-for="Dados.FirstOrDefault().De" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-2 demo-masked-input">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Ate" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Ate" placeholder="dd/mm/aaaa hh:mm" data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy HH:MM"
+                                       data-inputmask-placeholder="dd/mm/aaaa hh:mm" class="form-control" aria-required="true" />
+                            </div>
+                            <span asp-validation-for="Dados.FirstOrDefault().Ate" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#De").inputmask();
+        $("#Ate").inputmask();
+        ChangePeriodo();
+        ChangeDataDe();
+        ChangeTipoAvaliacao();
+        ChangeProfessorDisciplina();
+        $("#IdSubPeriodo").focus();
+        $("#BtnCadastroGravar").html("<i class='fas fa-plus'></i>");
+        $("#BtnCadastroNovo").hide();
+        DesativarProcessandoIndex();
+    });
+
+    function LimparCampos() {
+        $("#IdProfessorDisciplina").val("");
+        //$("#IdProfessorDisciplina").selectpicker('refresh');
+        //$("#IdProfessorDisciplina").selectpicker('render');
+        $("#De").val("");
+        $("#Ate").val("");
+    }
+
+    function DataTermino() {
+        //moment.locale('pt-br');
+        var De = $("#De").val();
+        var tipoAvaliacaoOption = $("#IdTipoAvaliacao").find('option:selected');
+        if (tipoAvaliacaoOption != null && tipoAvaliacaoOption != "") {
+            var tempoPadraoMinutos = tipoAvaliacaoOption.data('tempo');
+            if (tempoPadraoMinutos != null && tempoPadraoMinutos != "") {
+                if (De != null && De != "") {
+                    var Ate = moment(moment($("#De").val(), 'DD/MM/YYYY HH:mm')).add(tempoPadraoMinutos, 'm').format('DD/MM/YYYY HH:mm');
+                    $("#Ate").val(Ate);
+                }
+            }
+        }
+        DesativarProcessandoIndex();
+    }
+
+    function ChangeDataDe() {
+        ProcessandoIndex();
+        $("#De").blur(function () {
+            DataTermino();
+        });
+    }
+
+    function ChangeProfessorDisciplina() {
+        ProcessandoIndex();
+        $("#IdProfessorDisciplina").change(function () {
+            $("#De").focus();
+        });
+    }
+
+    function ChangeTipoAvaliacao() {
+        ProcessandoIndex();
+        $("#IdTipoAvaliacao").change(function () {
+            DataTermino();
+            $("#Sigla").focus();
+        });
+    }
+
+    function ProcessandoIndex() {
+        $("#DivProcessandoIndex").removeClass("invisible");
+    }
+
+    function DesativarProcessandoIndex() {
+        $("#DivProcessandoIndex").addClass("invisible");
+    }
+
+    function ChangePeriodo() {
+        $("#ddlPeriodo").change(function () {
+            ProcessandoIndex();
+            $("#IdSubPeriodo").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetSubPeriodo")',
+                dataType: 'json',
+                data: { idPeriodo: $("#ddlPeriodo").val() },
+                success: function (resultSubPeriodo) {
+                    if (resultSubPeriodo.dados == null) {
+                        $("#IdSubPeriodo").append("<option value=''>Sem bimestre</option>");
+                    }
+                    else {
+                        $("#IdSubPeriodo").append("<option value=''>Escolha o bimestre</option>");
+                    }
+                    $.each(resultSubPeriodo.dados, function (i, subPeriodo) {
+                        if (resultSubPeriodo.id == subPeriodo.id.toString()) {
+                            $("#IdSubPeriodo").append($('<option selected>').text(subPeriodo.nome).attr('value', subPeriodo.id));
+                        }
+                        else {
+                            $("#IdSubPeriodo").append($('<option>').text(subPeriodo.nome).attr('value', subPeriodo.id));
+                        }
+                    });
+                    //$("#IdSubPeriodo").selectpicker('refresh');
+                    //$("#IdSubPeriodo").selectpicker('render');
+                    $("#BtnNovoLancamento").hide();
+                    DesativarProcessandoIndex();
+                },
+                error: function (ex) {
+                    DesativarProcessandoIndex();
+                    alert('Erro ao receber bimestres');
+                }
+            });
+
+            $("#IdTurma").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetTurmas")',
+                dataType: 'json',
+                data: { idPeriodo: $("#ddlPeriodo").val() },
+                success: function (resultTurma) {
+                    if (resultTurma == null) {
+                        $("#IdTurma").append("<option value=''>Sem turma</option>");
+                    }
+                    else {
+                        $("#IdTurma").append("<option value=''>Escolha a turma</option>");
+                    }
+                    $.each(resultTurma, function (i, turma) {
+                        $("#IdTurma").append($('<option>').text(turma.nome).attr('value', turma.id));
+                    });
+                    //$("#IdTurma").selectpicker('refresh');
+                    //$("#IdTurma").selectpicker('render');
+                    $("#BtnNovoLancamento").hide();
+                    DesativarProcessandoIndex();
+                },
+                error: function (ex) {
+                    DesativarProcessandoIndex();
+                    alert('Erro ao receber turmas');
+                }
+            });
+
+            return false;
+        });
+    }
+</script>

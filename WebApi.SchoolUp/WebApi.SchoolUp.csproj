@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="bin\Debug\netcoreapp2.0\appsettings.Development.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="bin\Debug\netcoreapp2.2\appsettings.Development.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="bin\Debug\netcoreapp2.2\appsettings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Modelo.SchoolUp\Modelo.SchoolUp.csproj" />
+    <ProjectReference Include="..\Negocio.SchoolUp\Negocio.SchoolUp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Acesso.Nucleo">
+      <HintPath>..\Repositorio.Nucleo\Acesso.Nucleo.dll</HintPath>
+    </Reference>
+    <Reference Include="Modelo.Nucleo">
+      <HintPath>..\Repositorio.Nucleo\Modelo.Nucleo.dll</HintPath>
+    </Reference>
+    <Reference Include="Negocio.Nucleo">
+      <HintPath>..\Repositorio.Nucleo\Negocio.Nucleo.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

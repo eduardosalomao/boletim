@@ -1,0 +1,148 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmNotas>
+
+@{
+    ViewBag.TituloPagina = "Grade Turma";
+    //Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Grade Turma";
+    ViewBag.Action = "Edicao";
+    ViewBag.View = "DisciplinaHorario";
+}
+
+<link href="~/MeuBoletim/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
+
+<!-- Jquery DataTable Plugin Js -->
+<script src="~/MeuBoletim/plugins/jquery-datatable/jquery.dataTables.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/buttons.flash.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/jszip.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/pdfmake.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/vfs_fonts.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/buttons.html5.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/buttons.print.min.js"></script>
+
+<script src="~/js/grade.js"></script>
+
+<input id="HdnPrefixoFileName" type="hidden" value="Notas" name="HdnPrefixoFileName" />
+<br />
+<br />
+
+<div id="DivMensagem">
+</div>
+@{
+    if (Model.Dados?.Count > 0)
+    {
+        <div class="body">
+            <div class="table-responsive">
+                <table id="GridIndex" class="table table-bordered table-striped table-hover dataTable">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().MatriculaAluno)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().NomeAluno)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Nota)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Faltas)
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Dados)
+                        {
+                            <tr class="btnExcluir" id="@item.Id" data-id="@item.Id">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MatriculaAluno)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.NomeAluno)
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(modelItem => item.Nota, new { @class = "form-control nota", placeholder = "Ex: 8,25" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(modelItem => item.Faltas, new { @class = "form-control faltas", placeholder = "Nº Faltas" })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>
+            @ViewBag.LblMensagemGrid
+        </p>
+    }
+}
+<div class="form-row col-md-12 center-block text-center" style="text-align:center;">
+    <a href="@Url.Action("Index")" formnovalidate="formnovalidate" onclick="ProcessandoCadastro(); return true;" class="btn text-info col-md-1 BtnCadastro">
+        <i class="glyphicon glyphicon-backward"></i>&nbsp;&nbsp;Voltar
+    </a>
+    <div id="DivProcessandoIndex" class="col-md-2 invisible">
+        <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.faltas').inputmask('99', { placeholder: '', numericInput: true });
+        $('.nota').inputmask('99,9', { placeholder: '', numericInput: true });
+        ChangeNota();
+        ChangeFaltas();
+    });
+
+    function ChangeNota() {
+        $(".nota").on('change', function (e) {
+            ProcessandoIndex();
+            e.preventDefault();
+            var id = $(this).closest('tr').data('id');
+            var campo = document.getElementById(this.id);
+            var valorNota = this.value;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GravarNota")',
+                data: { idNota: id, nota: valorNota }
+            })
+                .done(function (result) {
+                $("#DivMensagem").html(result);
+                if (result.indexOf("DivMensagensErro") >= 0) {
+                    campo.focus();
+                    campo.select();
+                }
+                DesativarProcessandoIndex();
+            });
+
+            return false;
+        });
+    }
+    function ChangeFaltas() {
+        $(".faltas").on('change', function (e) {
+            ProcessandoIndex();
+            e.preventDefault();
+            var id = $(this).closest('tr').data('id');
+            var valorFaltas = this.value;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GravarFaltas")',
+                data: { idNota: id, faltas: valorFaltas }
+            })
+                .done(function (result) {
+                $("#DivMensagem").html(result);
+                if (result.indexOf("DivMensagensErro") >= 0) {
+                    campo.focus();
+                    campo.select();
+                }
+                DesativarProcessandoIndex();
+            });
+
+            return false;
+        });
+    }
+</script>

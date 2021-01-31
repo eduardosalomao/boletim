@@ -1,0 +1,203 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Relatorio.RptAcessoResponsavel>
+
+@{
+    ViewData["Title"] = "Relatório";
+}
+
+<input id="HdnPrefixoFileName" type="hidden" value="Acesso" name="HdnPrefixoFileName" />
+
+<div class="body">
+    <div class="row clearfix">
+        <div class="col-md-2">
+            <p>
+                <label class="control-label col-indigo">Período</label>
+            </p>
+            <select id="ddlPeriodo" name="ddlPeriodo" class="form-control show-tick" asp-items="ViewBag.IdPeriodo">
+                <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <p>
+                <label class="control-label col-indigo">Turma</label>
+            </p>
+            <select id="ddlTurma" name="ddlTurma" class="form-control show-tick" asp-items="ViewBag.IdTurma">
+                <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <p>
+                <label class="control-label col-indigo">Aluno</label>
+            </p>
+            <select id="ddlAluno" name="ddlAluno" class="form-control show-tick" asp-items="ViewBag.IdAluno">
+                <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmaTurma</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row clearfix">
+        <div class="col-md-2">
+            <div class="input-group">
+                <p>
+                    <b><label asp-for="Dados.FirstOrDefault().Inicio" class="control-label col-indigo"></label></b>
+                </p>
+                <div class="form-line">
+                    <input asp-for="Dados.FirstOrDefault().Inicio" placeholder="dd/mm/aaaa" class="form-control" aria-required="true" />
+                    <span asp-validation-for="Dados.FirstOrDefault().Inicio" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="input-group">
+                <p>
+                    <b><label asp-for="Dados.FirstOrDefault().Fim" class="control-label col-indigo"></label></b>
+                </p>
+                <div class="form-line">
+                    <input asp-for="Dados.FirstOrDefault().Fim" placeholder="dd/mm/aaaa" class="form-control" aria-required="true" />
+                    <span asp-validation-for="Dados.FirstOrDefault().Fim" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <p><b><label asp-for="Dados.FirstOrDefault().IsAgrupar" class="control-label col-indigo"></label></b></p>
+            <div class="switch">
+                <label>Não<input id="IsAgrupar" name="IsAgrupar" type="checkbox"><span class="lever switch-col-blue-grey"></span>Sim</label>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <p>
+                <label class="control-label col-indigo">&nbsp;</label>
+            </p>
+            <button id="BtnLimpar" name="BtnLimpar" class="btn col-md-3 BtnCadastro btn-info">
+                Limpar&nbsp;&nbsp;<i class="fas fa-eraser"></i>
+            </button>
+            <button type="button" id="BtnFiltrar" onclick="GerarRelatorio(); return false;" name="BtnFiltrar" class="btn col-md-3 col-md-offset-1 BtnCadastro btn-success">
+                Filtrar&nbsp;&nbsp;<i class="fas fa-search"></i>
+            </button>
+            <div id="DivProcessandoIndex" class="col-md-2 invisible">
+                <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div id="DivMensagem">
+        @{
+            Html.RenderPartial("JanelaMensagem");
+        }
+    </div>
+</div>
+
+<div id="DivRelatorio">
+</div>
+
+<script>
+    $(document).ready(function () {
+        Limpar();
+        ChangePeriodo();
+        ChangeTurma();
+    });
+
+    function ProcessandoIndex() {
+        $("#DivProcessandoIndex").removeClass("invisible");
+    }
+
+    function DesativarProcessandoIndex() {
+        $("#DivProcessandoIndex").addClass("invisible");
+    }
+
+    function ChangePeriodo() {
+        $("#ddlPeriodo").change(function () {
+            ProcessandoIndex();
+            Limpar();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetTurmas")',
+                dataType: 'json',
+                data: { idPeriodo: $("#ddlPeriodo").val() },
+                success: function (resultTurma) {
+                    if (resultTurma == null) {
+                        $("#ddlTurma").append("<option value=''>Sem turma</option>");
+                    }
+                    else {
+                        $("#ddlTurma").append("<option value=''>@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>");
+                    }
+                    $.each(resultTurma, function (i, turma) {
+                        $("#ddlTurma").append($('<option>').text(turma.nome).attr('value', turma.id));
+                    });
+                    //$("#ddlTurma").selectpicker('refresh');
+                    //$("#ddlTurma").selectpicker('render');
+                    DesativarProcessandoIndex();
+                },
+                error: function (ex) {
+                    DesativarProcessandoIndex();
+                    alert('Erro ao receber turmas');
+                }
+            });
+
+            return false;
+        });
+    }
+
+    function ChangeTurma() {
+        $("#ddlTurma").change(function () {
+            ProcessandoIndex();
+            $("#ddlAluno").empty();
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetAlunos")',
+                data: { idTurma: $("#ddlTurma").val() }
+            })
+                .done(function (resultAluno) {
+                    if (resultAluno == null) {
+                        $("#ddlAluno").append("<option value='' selected='selected'>Sem aluno</option>");
+                    }
+                    else {
+                        $("#ddlAluno").append("<option value='' selected='selected'>Escolha o aluno</option>");
+                    }
+                    $.each(resultAluno, function (i, aluno) {
+                        $("#ddlAluno").append($('<option>').text(aluno.alunoNome).attr('value', aluno.idAluno));
+                    });
+                    //$("#ddlAluno").selectpicker('refresh');
+                    //$("#ddlAluno").selectpicker('render');
+                    DesativarProcessandoIndex();
+            });
+        });
+    }
+
+    function GerarRelatorio() {
+        ProcessandoIndex();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ObterAcessoResponsavel")',
+            data: {
+                idAluno: $("#ddlAluno").val(), idTurma: $("#ddlTurma").val(),
+                inicio: $("#Inicio").val(), fim: $("#Fim").val(), isAgrupar: $("#IsAgrupar").prop('checked')
+            }
+        }).done(function (result) {
+            $("#DivRelatorio").html(result);
+            DesativarProcessandoIndex();
+        })    ;
+    }
+
+    function Limpar() {
+        $("#BtnLimpar").click(function () {
+            $("#ddlAluno").empty();
+            $("#ddlAluno").append("<option value=''>Escolha a turma</option>");
+            $("#ddlAluno").val("");
+            //$("#ddlAluno").selectpicker('refresh');
+            //$("#ddlAluno").selectpicker('render');
+
+            $("#ddlTurma").val("");
+            //$("#ddlTurma").selectpicker('refresh');
+            //$("#ddlTurma").selectpicker('render');
+
+            $("#Inicio").val("");
+            $("#Inicio").text("");
+
+            $("#Fim").val("");
+            $("#Fim").text("");
+
+            return false;
+        });
+    }
+</script>

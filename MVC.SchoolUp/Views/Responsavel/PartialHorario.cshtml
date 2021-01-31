@@ -1,0 +1,88 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmDisciplinaHorario>
+
+<link href="~/lib/data-tables/datatables.min.css" rel="stylesheet" />
+<link href="~/lib/data-tables/DataTables-1.10.20/css/dataTables.bootstrap4.css" rel="stylesheet" />
+
+<script src="~/lib/data-tables/datatables.min.js"></script>
+<script src="~/lib/data-tables/DataTables-1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="~/lib/data-tables/DataTables-1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/buttons.html5.min.js"></script>
+<script src="~/js/grade.js"></script>
+
+@{
+    if (Model.Dados?.Count > 0)
+    {
+        <div class="card" style="overflow-x: auto;">
+            <div class="body">
+                <div class="table-responsive">
+                    <table id="GridIndex" class="table table-bordered table-striped table-hover dataTable">
+                        <thead>
+                            <tr>
+                                <th>Tempo</th>
+                                @{ var diasSemana = Model.Dados.Select(s => s.Dia).Distinct().OrderBy(o => o.Value);
+                                    foreach (var diaSemana in diasSemana)
+                                    {
+                                        <th>
+                                            @Html.DisplayFor(modelItem => Modelo.SchoolUp.Enumeracao.DiasSemana.ObterDiasSemana().Where(i => i.dia == diaSemana).FirstOrDefault().nomeDia)
+                                        </th>
+                                    }
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Dados.GroupBy(g => g.nomeHorarioTurno))
+                            {
+                                string nomeTempo = item.FirstOrDefault().nomeHorarioTurno;
+                                int posicao = nomeTempo.IndexOf("(");
+                                if (posicao > -1)
+                                {
+                                    nomeTempo = nomeTempo.Remove(posicao).Trim();
+                                }
+                                <tr>
+                                    <td>
+                                        <p><b>@Html.DisplayFor(modelItem => nomeTempo)</b></p>
+                                        <p>
+                                            @{
+                                                string inicioTempo = String.Format("{0:hh\\:mm}", item.FirstOrDefault().Inicio.Value);
+                                                string fimTempo = String.Format("{0:hh\\:mm}", item.FirstOrDefault().Termino.Value);
+                                                @Html.DisplayFor(modelItem => inicioTempo)}&nbsp;-&nbsp;@Html.DisplayFor(modelItem => fimTempo)
+                                            </p>
+                                        </td>
+                                        @foreach (var diaSemana in diasSemana)
+                                        {
+                                            <td>
+                                                <p title="Disciplina">
+                                                    @{ string itemNomeDisciplina = item.Where(i => i.Dia == diaSemana).FirstOrDefault()?.nomeDisciplina; if (String.IsNullOrEmpty(itemNomeDisciplina))
+                                                        {
+                                                            itemNomeDisciplina = "Nenhuma";
+                                                        }
+                                                        @Html.DisplayFor(modelItem => itemNomeDisciplina)
+                                                    }
+                                                </p>
+                                                <p title="Professor">
+                                                    @{ string itemNomeProfessor = item.Where(i => i.Dia == diaSemana).FirstOrDefault()?.nomeProfessor; if (String.IsNullOrEmpty(itemNomeProfessor))
+                                                        {
+                                                            itemNomeProfessor = "Nenhum";
+                                                        }
+                                                        @Html.DisplayFor(modelItem => itemNomeProfessor)
+                                                    }
+                                                </p>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>
+            @ViewBag.LblMensagem
+        </p>
+    }
+}

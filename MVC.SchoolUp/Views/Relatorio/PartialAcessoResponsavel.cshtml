@@ -1,0 +1,92 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Relatorio.RptAcessoResponsavel>
+
+<link href="~/lib/data-tables/datatables.min.css" rel="stylesheet" />
+<link href="~/lib/data-tables/DataTables-1.10.20/css/dataTables.bootstrap4.css" rel="stylesheet" />
+
+<script src="~/lib/data-tables/datatables.min.js"></script>
+<script src="~/lib/data-tables/DataTables-1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="~/lib/data-tables/DataTables-1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/buttons.html5.min.js"></script>
+<script src="~/js/relatorio.js"></script>
+
+@{
+    if (Model.Dados?.Count > 0 && !String.IsNullOrEmpty(Model.Dados.FirstOrDefault().NomeResponsavel))
+    {
+        <div class="card">
+            <div class="body">
+                <div class="table table-striped w-auto">
+                    <table id="GridIndex" class="table table-bordered table-striped table-hover dataTable">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(modelItem => Model.Dados.FirstOrDefault().Turma)</th>
+                                <th>@Html.DisplayNameFor(modelItem => Model.Dados.FirstOrDefault().NomeAluno)</th>
+                                <th>@Html.DisplayNameFor(modelItem => Model.Dados.FirstOrDefault().Login)</th>
+                                @if (Model.Dados.FirstOrDefault().IsAgrupar)
+                                {
+                                    <th>@Html.DisplayNameFor(modelItem => Model.Dados.FirstOrDefault().DataAcessoMaxima)</th>
+                                    <th>@Html.DisplayNameFor(modelItem => Model.Dados.FirstOrDefault().DataAcessoMinima)</th>
+                                    <th>@Html.DisplayNameFor(modelItem => Model.Dados.FirstOrDefault().NumeroAcessos)</th>
+                                }
+                                else
+                                {
+                                    <th>@Html.DisplayNameFor(modelItem => Model.Dados.FirstOrDefault().DataAcesso)</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Dados)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Turma)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.NomeAluno)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Login)
+                                    </td>
+                                    @if (item.IsAgrupar)
+                                    {
+                                        <td>
+                                            @{
+                                                string dataAcessoMaxima = String.Format("{0:dd/MM/yyyy}", item.DataAcessoMaxima.ToShortDateString());
+                                                @Html.DisplayFor(modelItem => dataAcessoMaxima)
+                                            }
+                                        </td>
+                                        <td>
+                                            @{
+                                                string dataAcessoMinima = String.Format("{0:dd/MM/yyyy}", item.DataAcessoMinima.ToShortDateString());
+                                                @Html.DisplayFor(modelItem => dataAcessoMinima)
+                                            }
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.NumeroAcessos)
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            @{
+                                                string dataAcesso = String.Format("{0:dd/MM/yyyy}", item.DataAcesso.ToShortDateString());
+                                                @Html.DisplayFor(modelItem => dataAcesso)
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>
+            @Model.Mensagem
+        </p>
+    }
+}

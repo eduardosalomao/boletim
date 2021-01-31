@@ -1,0 +1,26 @@
+{
+  "name": "SchoolUp",
+  "resolutions": {
+    "bootstrap": "v4.1.1",
+    "jquery-validation-unobtrusive": "v3.2.10",
+    "select2": "4.0.5",
+    "angular": "v1.7.0",
+    "Font-Awesome": "5.1.0",
+    "bootstrap-select": "v1.13.1",
+    "inputmask": "4.0.0"
+  },
+  "dependencies": {
+    "jquery-validation-unobtrusive": "v3.2.10",
+    "jquery-validation": "1.17.0",
+    "select2": "4.0.5",
+    "inputmask": "4.0.0",
+    "modernizr": "v2010.07.06dev",
+    "jquery-ajax-unobtrusive": "v3.2.5",
+    "angular": "v1.7.0",
+    "Font-Awesome": "5.1.0",
+    "bootstrap": "v4.1.1",
+    "bootstrap-select": "v1.13.1",
+    "jquery-slimscroll": "v1.3.8",
+    "materialize": "v0.100.2"
+  }
+}

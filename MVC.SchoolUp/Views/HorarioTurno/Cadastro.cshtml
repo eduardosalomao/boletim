@@ -1,0 +1,70 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmHorarioTurno>
+
+@{
+    ViewBag.TituloPagina = "Tempo";
+    Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Tempo";
+    ViewBag.Action = "Cadastro";
+    ViewBag.View = "HorarioTurno";
+}
+
+<input asp-for="Dados.FirstOrDefault().Id" type="hidden" value="@ViewBag.Id" />
+<div class="row clearfix">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="body">
+                <div class="row clearfix">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Nome" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Nome" class="form-control" placeholder="Digite o nome" autofocus="" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Nome" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <label asp-for="Dados.FirstOrDefault().IdTurno" class="control-label col-indigo"></label>
+                            </p>
+                            <div class="form-line">
+                                <select asp-for="Dados.FirstOrDefault().IdTurno" class="form-control show-tick" asp-items="ViewBag.IdTurno" placeholder="@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem">
+                                    <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+                                </select>
+                                <span asp-validation-for="Dados.FirstOrDefault().IdTurno" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row clearfix">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Inicio" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Inicio" placeholder="hh:mm" class="form-control" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Inicio" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Termino" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Termino" placeholder="hh:mm" class="form-control" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Termino" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

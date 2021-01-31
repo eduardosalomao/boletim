@@ -1,0 +1,42 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmRecuperarSenha>
+
+@{
+    ViewBag.TituloPagina = "Recuperar Senha";
+    Layout = "~/Views/Shared/PaginaBaseNaoLogado.cshtml";
+    ViewBag.TituloSecaoHtml = "Recuperar Senha";
+    ViewBag.Action = "RecuperarSenha";
+    ViewBag.View = "Acesso";
+}
+
+<div class="row clearfix">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <b>Recuperar senha</b>
+            </div>
+            <div class="card-body">
+                <div class="row clearfix">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Email" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Email" class="form-control" placeholder="Digite o email" autofocus="" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        document.getElementById('BtnCadastroVoltar').href = "Login";
+        $("#BtnCadastroNovo").hide();
+        $("#BtnCadastroGravar").html('<i class="fas fa-paper-plane"></i>&nbsp;&nbsp;Enviar');
+    });
+</script>

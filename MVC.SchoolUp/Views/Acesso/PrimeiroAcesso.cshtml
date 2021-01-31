@@ -1,0 +1,141 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmPrimeiroAcesso>
+
+@{
+    ViewBag.TituloPagina = "Primeiro Acesso";
+    Layout = "~/Views/Shared/PaginaBaseNaoLogado.cshtml";
+    ViewBag.TituloSecaoHtml = "Primeiro Acesso";
+    ViewBag.Action = "PrimeiroAcesso";
+    ViewBag.View = "Acesso";
+}
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="row clearfix">
+    <div class="col-md-6">
+        <div class="card-header bg-info text-white">
+            <b>Primeiro acesso</b>
+        </div>
+        <div class="card">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="card-body">
+                <h6 class="col-indigo">Dados do Aluno</h6>
+                <hr style="height:1px; background-color:indigo" />
+                <div class="row clearfix">
+                    <div class="col-md-6">
+                        <p>
+                            <label asp-for="Dados.FirstOrDefault().IdTurma" class="control-label col-indigo"></label>
+                        </p>
+                        <select asp-for="Dados.FirstOrDefault().IdTurma" class="form-control show-tick" asp-items="ViewBag.IdTurma" placeholder="@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem">
+                            <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+                        </select>
+                        <span asp-validation-for="Dados.FirstOrDefault().IdTurma" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <p>
+                            <label asp-for="Dados.FirstOrDefault().IdAluno" class="control-label col-indigo"></label>
+                        </p>
+                        <select asp-for="Dados.FirstOrDefault().IdAluno" class="form-control show-tick" placeholder="@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem">
+                            <option value="" selected="selected">Selecione uma turma</option>
+                        </select>
+                        <span asp-validation-for="Dados.FirstOrDefault().IdAluno" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Matricula" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input id="HdnEmail" name="HdnEmail" value="@ViewBag.Matricula" type="hidden" />
+                                <input asp-for="Dados.FirstOrDefault().Matricula" class="form-control" placeholder="Digite a matrícula" autofocus="" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Matricula" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().DataNascimento" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().DataNascimento" placeholder="dd/mm/aaaa" class="form-control" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().DataNascimento" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="col-indigo">Dados para acesso ao sistema</h6>
+                <hr style="height:1px; background-color:indigo" />
+                <div class="row clearfix">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Email" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Email" class="form-control" placeholder="Digite o email" autofocus="" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Senha" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Senha" class="form-control" placeholder="Digite a senha" type="password" autofocus="" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Senha" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().ConfirmaSenha" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().ConfirmaSenha" placeholder="Confirme sua senha" type="password" class="form-control" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().ConfirmaSenha" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        document.getElementById('BtnCadastroVoltar').href = "Login";
+        $("#BtnCadastroNovo").hide();
+        ChangeTurma();
+    });
+
+    function ChangeTurma() {
+        $("#IdTurma").change(function () {
+            ProcessandoCadastro();
+            $("#IdAluno").empty();
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetAlunos")',
+                data: { idTurma: $("#IdTurma").val() }
+            })
+                .done(function (resultAluno) {
+                    if (resultAluno == null) {
+                        $("#IdAluno").append("<option value='' selected='selected'>Sem aluno</option>");
+                    }
+                    else {
+                        $("#IdAluno").append("<option value='' selected='selected'>Escolha o aluno</option>");
+                    }
+                    $.each(resultAluno, function (i, aluno) {
+                        $("#IdAluno").append($('<option>').text(aluno.alunoNome).attr('value', aluno.idAluno));
+                    });
+                    //$("#IdAluno").selectpicker('refresh');
+                    //$("#IdAluno").selectpicker('render');
+                    DesativarProcessandoCadastro();
+            });
+        });
+    }
+</script>

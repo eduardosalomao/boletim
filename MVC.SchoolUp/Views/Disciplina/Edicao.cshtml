@@ -1,0 +1,181 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmDisciplinaHorario>
+
+@{
+    ViewBag.TituloPagina = "Grade de Horário";
+    Layout = "~/Views/Shared/PaginaBaseGrade.cshtml";
+    //ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Grade Turma";
+    ViewBag.Action = "Edicao";
+    ViewBag.View = "Grade";
+}
+
+<link href="~/lib/data-tables/datatables.min.css" rel="stylesheet" />
+<link href="~/lib/data-tables/DataTables-1.10.20/css/dataTables.bootstrap4.css" rel="stylesheet" />
+
+<script src="~/lib/data-tables/datatables.min.js"></script>
+<script src="~/lib/data-tables/DataTables-1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="~/lib/data-tables/DataTables-1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/buttons.html5.min.js"></script>
+
+<script src="~/js/grade.js"></script>
+
+<input id="HdnPrefixoFileName" type="hidden" value="GradeTurma" name="HdnPrefixoFileName" />
+<input id="HdnIdTurma" type="hidden" value="@ViewBag.IdTurma" />
+
+@{
+    if (Model.Dados?.Count > 0)
+    {
+        <div class="card">
+            <div class="body">
+            <div class="table table-striped w-auto">
+                <h4 class="text-center text-info">Turma: @Model.Dados[0].nomeTurma</h4>
+                <table id="GridIndex" class="table table-bordered table-striped table-hover dataTable">
+                    <thead>
+                        <tr>
+                            <th>Tempo</th>
+                            @foreach (var diaSemana in Modelo.SchoolUp.Enumeracao.DiasSemana.ObterDiasSemana().OrderBy(o => o.dia))
+                            {
+                                <th>
+                                    @Html.DisplayFor(modelItem => diaSemana.nomeDia)
+                                </th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            @using System.Linq;
+
+                            Int32 linha = 0;
+                            List<Modelo.SchoolUp.Custom.CmProfessorDisciplina> listaProfessor = ViewBag.ListaProfessor;
+
+                            foreach (var item in Model.Dados.GroupBy(g => g.nomeHorarioTurno))
+                            {
+                                Int32 coluna = 0;
+                                <tr>
+                                    <td>
+                                        <b>@Html.DisplayFor(modelItem => item.FirstOrDefault().nomeHorarioTurno)</b><br />@{string inicioTempo = String.Format("{0:hh\\:mm}", item.FirstOrDefault().Inicio.Value);
+                                            string fimTempo = String.Format("{0:hh\\:mm}", item.FirstOrDefault().Termino.Value); @Html.DisplayFor(modelItem => inicioTempo)} -
+                                        @Html.DisplayFor(modelItem => fimTempo)
+                                    </td>
+                                    @foreach (var diasSemana in Modelo.SchoolUp.Enumeracao.DiasSemana.ObterDiasSemana().OrderBy(o => o.dia))
+                                    {
+                                        Guid? idDisciplina = null;
+                                        <td>
+                                            <p title="Disciplina">
+                                                @{ Guid? itemIdDisciplina = item.Where(i => i.Dia == diasSemana.dia).FirstOrDefault()?.IdDisciplina;
+
+                                                }
+                                                <select id='@String.Format("Disc_{0}_{1}", linha, coluna)' name='@String.Format("Disc_{0}_{1}", linha, coluna)' class="form-control show-tick disciplina" placeholder="Nenhum">
+                                                    @{
+                                                        if (itemIdDisciplina == null)
+                                                        {
+                                                            <option value="" selected="selected">Nenhuma</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="">Nenhuma</option>
+                                                        }
+                                                        foreach (var dadosDisciplina in ViewBag.IdDisciplina)
+                                                        {
+                                                            if (itemIdDisciplina != null && itemIdDisciplina.Value.ToString() == dadosDisciplina.Value)
+                                                            {
+                                                                idDisciplina = Guid.Parse(dadosDisciplina.Value);
+                                                                <option value="@dadosDisciplina.Value" selected="selected">@dadosDisciplina.Text</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@dadosDisciplina.Value">@dadosDisciplina.Text</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+                                            </p>
+                                            <p title="Professor">
+                                                @{ Guid? itemIdProfessor = item.Where(i => i.Dia == diasSemana.dia).FirstOrDefault()?.IdProfessor;
+                                                    <select id='@String.Format("Prof_{0}_{1}", linha, coluna)' name='@String.Format("Prof_{0}_{1}", linha, coluna)' class="form-control show-tick" placeholder="Nenhum">
+                                                        @{
+                                                            if (itemIdProfessor == null)
+                                                            {
+                                                                <option value="" selected="selected">Nenhum</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="">Nenhum</option>
+                                                            }
+                                                            if (idDisciplina != null)
+                                                            {
+                                                                foreach (var dadosProfessor in listaProfessor.Where(i => i.IdDisciplina == idDisciplina).ToList())
+                                                                {
+                                                                    if (itemIdProfessor != null && itemIdProfessor.Value == dadosProfessor.IdProfessor)
+                                                                    {
+                                                                        <option value="@dadosProfessor.IdProfessor" selected="selected">@dadosProfessor.NomeProfessor</option>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option value="@dadosProfessor.IdProfessor">@dadosProfessor.NomeProfessor</option>
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                }
+                                            </p>
+                                        </td>
+                                        coluna++;
+                                    }
+                                </tr>
+                                linha++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+    }
+}
+
+<div id="DivProcessandoIndex" class="col-md-2 invisible">
+    <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+</div>
+
+<script>
+    $(document).ready(function () {
+        var link = document.getElementById('BtnVoltarGrade').href;
+        document.getElementById('BtnVoltarGrade').href = link +"/" + $("#HdnIdTurma").val();
+        ChangeDisciplina();
+    });
+
+    function ChangeDisciplina() {
+        $(".disciplina").on('change', function (e) {
+            ProcessandoIndex();
+            e.preventDefault();
+            var idDdlProfessor = this.id.replace("Disc_", "Prof_");
+            var ddlProfessor = $("#" + idDdlProfessor);
+            ddlProfessor.empty();
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '@Url.Action("GetProfessores")',
+                data: { idDisciplina: this.value },
+                success: function (resultProfessor) {
+                    ddlProfessor.append("<option value='' selected='selected'>Nenhum</option>");
+
+                    $.each(resultProfessor, function (i, professor) {
+                        ddlProfessor.append($('<option>').text(professor.nomeProfessor).attr('value', professor.idProfessor));
+                    });
+                    //ddlProfessor.selectpicker('refresh');
+                    //ddlProfessor.selectpicker('render');
+                    DesativarProcessandoIndex();
+                },
+                error: function (ex) {
+                    DesativarProcessandoIndex();
+                    alert('Erro ao receber professores');
+                }
+            });
+
+            return false;
+        });
+    }
+</script>

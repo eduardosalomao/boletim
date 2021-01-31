@@ -1,0 +1,120 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmAvaliacao>
+
+<link href="~/MeuBoletim/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
+
+<script src="~/MeuBoletim/plugins/jquery-datatable/jquery.dataTables.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/buttons.flash.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/jszip.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/pdfmake.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/vfs_fonts.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/buttons.html5.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/buttons.print.min.js"></script>
+<script src="~/js/calendario.js"></script>
+
+@{
+    if (Model.Dados?.Count > 0)
+    {
+        <div class="body">
+            <div class="table-responsive">
+                <table id="GridIndex" class="table table-bordered table-striped table-hover dataTable">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Sigla)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().De)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().Ate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().NomeDisciplina)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Dados.FirstOrDefault().NomeProfessor)
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Dados)
+                        {
+                            <tr class="btnExcluir" id="@item.Id" data-id="@item.Id" data-idperiodo="@item.IdPeriodo" data-periodonome="@item.NomePeriodo">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Sigla)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.De)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Ate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.NomeDisciplina)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.NomeProfessor)
+                                </td>
+                                <td style="max-width:80px!important" align="center">
+
+                                    <button type="button" class="btn btn-info btnEditar">
+                                        <i class="far fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btnExcluir">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>
+            @ViewBag.LblMensagem
+        </p>
+    }
+}
+
+<script>
+    $(document).ready(function () {
+        Editar();
+    });
+
+    function Editar() {
+    $('button.btnEditar').on('click', function (e) {
+        e.preventDefault();
+        var valIdAvaliacao = $(this).closest('tr').data('id');
+        var valIdPeriodo = $(this).closest('tr').data('idperiodo');
+        var valPeriodoNome = $(this).closest('tr').data('periodonome');
+        $.ajax({
+            url: '@Url.Action("Editar")',
+            type: 'GET',
+            data: { idAvaliacao: valIdAvaliacao, idPeriodo: valIdPeriodo,  periodoNome: valPeriodoNome}
+        })
+        .done(function (result) {
+            var dados = result.dados[0];
+            alert(dados.id);
+            alert(dados.idTipoAvaliacao);
+            $("#IdTipoAvaliacao").val(dados.idTipoAvaliacao);
+            //$('#IdTipoAvaliacao').selectpicker('refresh')
+            $("#De").val(dados.de);
+            $("#Sigla").val(dados.sigla);
+        })
+        .fail(function (mensagem) {
+            $("#DivMensagem").html(mensagem);
+        });
+    });
+    }
+
+</script>
+
+@{
+    Html.RenderPartial("JanelaConfirmacao");
+}

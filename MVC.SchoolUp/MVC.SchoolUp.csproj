@@ -1,0 +1,175 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="wwwroot\MeuBoletim\**" />
+    <Content Remove="wwwroot\MeuBoletim\**" />
+    <EmbeddedResource Remove="wwwroot\MeuBoletim\**" />
+    <None Remove="wwwroot\MeuBoletim\**" />
+  </ItemGroup>
+  
+  <!--<PropertyGroup Condition=" '$(Configuration)' == '' Or '$(Configuration)' == 'Debug'">
+    <EnvironmentName>Development</EnvironmentName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' != '' AND '$(Configuration)' != 'Debug' ">
+    <EnvironmentName>Production</EnvironmentName>
+  </PropertyGroup>-->
+
+  <!--<PropertyGroup>
+    <EnvironmentName>Staging</EnvironmentName>
+  </PropertyGroup>-->
+
+  <ItemGroup>
+    <Content Include="obj\Debug\netcoreapp2.2\appsettings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.4" />
+    <PackageReference Include="NPOI" Version="2.4.1" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Modelo.SchoolUp\Modelo.SchoolUp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Modelo.Nucleo">
+      <HintPath>..\Repositorio.Nucleo\Modelo.Nucleo.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\css\style.css" />
+    <None Include="wwwroot\css\style.min.css" />
+    <None Include="wwwroot\css\all-themes.css" />
+    <None Include="wwwroot\css\all-themes.min.css" />
+    <None Include="wwwroot\lib\chartjs\.gitignore" />
+    <None Include="wwwroot\lib\chartjs\Chart.js" />
+    <None Include="wwwroot\lib\chartjs\Chart.min.js" />
+    <None Include="wwwroot\lib\chartjs\docs\00-Getting-Started.md" />
+    <None Include="wwwroot\lib\chartjs\docs\01-Line-Chart.md" />
+    <None Include="wwwroot\lib\chartjs\docs\02-Bar-Chart.md" />
+    <None Include="wwwroot\lib\chartjs\docs\03-Radar-Chart.md" />
+    <None Include="wwwroot\lib\chartjs\docs\04-Polar-Area-Chart.md" />
+    <None Include="wwwroot\lib\chartjs\docs\05-Pie-Doughnut-Chart.md" />
+    <None Include="wwwroot\lib\chartjs\docs\06-Advanced.md" />
+    <None Include="wwwroot\lib\chartjs\docs\07-Notes.md" />
+    <None Include="wwwroot\lib\chartjs\gulpfile.js" />
+    <None Include="wwwroot\lib\chartjs\LICENSE.md" />
+    <None Include="wwwroot\lib\chartjs\README.md" />
+    <None Include="wwwroot\lib\chartjs\samples\bar.html" />
+    <None Include="wwwroot\lib\chartjs\samples\doughnut.html" />
+    <None Include="wwwroot\lib\chartjs\samples\line.html" />
+    <None Include="wwwroot\lib\chartjs\samples\pie.html" />
+    <None Include="wwwroot\lib\chartjs\samples\polar-area.html" />
+    <None Include="wwwroot\lib\chartjs\samples\radar.html" />
+    <None Include="wwwroot\lib\chartjs\src\Chart.Bar.js" />
+    <None Include="wwwroot\lib\chartjs\src\Chart.Core.js" />
+    <None Include="wwwroot\lib\chartjs\src\Chart.Doughnut.js" />
+    <None Include="wwwroot\lib\chartjs\src\Chart.Line.js" />
+    <None Include="wwwroot\lib\chartjs\src\Chart.PolarArea.js" />
+    <None Include="wwwroot\lib\chartjs\src\Chart.Radar.js" />
+    <None Include="wwwroot\lib\animate-css\animate.css" />
+    <None Include="wwwroot\lib\animate-css\animate.min.css" />
+    <None Include="wwwroot\lib\jquery-countto\jquery.countTo.js" />
+    <None Include="wwwroot\lib\morrisjs\.gitignore" />
+    <None Include="wwwroot\lib\morrisjs\.travis.yml" />
+    <None Include="wwwroot\lib\morrisjs\examples\area-as-line.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\area.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\bar-colors.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\bar-no-axes.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\bar.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\days.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\decimal-custom-hover.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\diagonal-xlabels-bar.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\diagonal-xlabels.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\donut-colors.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\donut-formatter.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\donut.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\dst.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\events.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\goals.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\lib\example.css" />
+    <None Include="wwwroot\lib\morrisjs\examples\lib\example.js" />
+    <None Include="wwwroot\lib\morrisjs\examples\months-no-smooth.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\negative.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\no-grid.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\non-continuous.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\non-date.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\quarters.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\resize.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\stacked_bars.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\timestamps.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\updating.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\weeks.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\years.html" />
+    <None Include="wwwroot\lib\morrisjs\examples\_template.html" />
+    <None Include="wwwroot\lib\morrisjs\Gruntfile.js" />
+    <None Include="wwwroot\lib\morrisjs\less\morris.core.less" />
+    <None Include="wwwroot\lib\morrisjs\lib\morris.area.coffee" />
+    <None Include="wwwroot\lib\morrisjs\lib\morris.bar.coffee" />
+    <None Include="wwwroot\lib\morrisjs\lib\morris.coffee" />
+    <None Include="wwwroot\lib\morrisjs\lib\morris.donut.coffee" />
+    <None Include="wwwroot\lib\morrisjs\lib\morris.grid.coffee" />
+    <None Include="wwwroot\lib\morrisjs\lib\morris.hover.coffee" />
+    <None Include="wwwroot\lib\morrisjs\lib\morris.line.coffee" />
+    <None Include="wwwroot\lib\morrisjs\morris.css" />
+    <None Include="wwwroot\lib\morrisjs\morris.js" />
+    <None Include="wwwroot\lib\morrisjs\morris.min.js" />
+    <None Include="wwwroot\lib\morrisjs\README.md" />
+    <None Include="wwwroot\lib\morrisjs\spec\lib\area\area_spec.coffee" />
+    <None Include="wwwroot\lib\morrisjs\spec\lib\bar\bar_spec.coffee" />
+    <None Include="wwwroot\lib\morrisjs\spec\lib\bar\colours.coffee" />
+    <None Include="wwwroot\lib\morrisjs\spec\lib\commas_spec.coffee" />
+    <None Include="wwwroot\lib\morrisjs\spec\lib\donut\donut_spec.coffee" />
+    <None Include="wwwroot\lib\morrisjs\spec\lib\grid\auto_grid_lines_spec.coffee" />
+    <None Include="wwwroot\lib\morrisjs\spec\lib\grid\set_data_spec.coffee" />
+    <None Include="wwwroot\lib\morrisjs\spec\lib\grid\y_label_format_spec.coffee" />
+    <None Include="wwwroot\lib\morrisjs\spec\lib\hover_spec.coffee" />
+    <None Include="wwwroot\lib\morrisjs\spec\lib\label_series_spec.coffee" />
+    <None Include="wwwroot\lib\morrisjs\spec\lib\line\line_spec.coffee" />
+    <None Include="wwwroot\lib\morrisjs\spec\lib\pad_spec.coffee" />
+    <None Include="wwwroot\lib\morrisjs\spec\lib\parse_time_spec.coffee" />
+    <None Include="wwwroot\lib\morrisjs\spec\specs.html" />
+    <None Include="wwwroot\lib\morrisjs\spec\support\placeholder.coffee" />
+    <None Include="wwwroot\lib\morrisjs\spec\viz\examples.js" />
+    <None Include="wwwroot\lib\morrisjs\spec\viz\exemplary\area0.png" />
+    <None Include="wwwroot\lib\morrisjs\spec\viz\exemplary\bar0.png" />
+    <None Include="wwwroot\lib\morrisjs\spec\viz\exemplary\line0.png" />
+    <None Include="wwwroot\lib\morrisjs\spec\viz\exemplary\stacked_bar0.png" />
+    <None Include="wwwroot\lib\morrisjs\spec\viz\run.sh" />
+    <None Include="wwwroot\lib\morrisjs\spec\viz\test.html" />
+    <None Include="wwwroot\lib\morrisjs\spec\viz\visual_specs.js" />
+    <None Include="wwwroot\lib\raphael\Gruntfile.js" />
+    <None Include="wwwroot\lib\raphael\raphael.js" />
+    <None Include="wwwroot\lib\raphael\raphael.min.js" />
+    <None Include="wwwroot\lib\raphael\raphael.no-deps.js" />
+    <None Include="wwwroot\lib\raphael\raphael.no-deps.min.js" />
+    <None Include="wwwroot\lib\raphael\webpack.config.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Aluno\Mudar.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Aluno\Novo.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\bootstrap-441\" />
+  </ItemGroup>
+
+</Project>

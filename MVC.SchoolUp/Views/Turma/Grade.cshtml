@@ -1,0 +1,194 @@
+﻿@{
+    ViewBag.TituloPagina = "Grade Turma";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Grade Turma";
+    ViewBag.Action = "Edicao";
+}
+
+<link href="~/lib/jquery-ui-1.12.1.custom/jquery-ui.css" rel="stylesheet" />
+<script src="~/lib/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
+<script src="~/js/Processando.js"></script>
+
+<div class="form-group">
+    <div id="DivMensagem">
+        @{
+            Html.RenderPartial("JanelaMensagem");
+        }
+    </div>
+
+    <div class="row clearfix">
+        <div class="col-md-2">
+            <p>
+                <label class="control-label col-indigo">Período</label>
+            </p>
+            <select id="ddlPeriodo" name="ddlPeriodo" class="form-control show-tick" asp-items="ViewBag.IdPeriodo"></select>
+        </div>
+        <div class="col-md-2">
+            <p>
+                <label class="control-label col-indigo">Turma</label>
+            </p>
+            <select id="ddlTurma" name="ddlTurma" class="form-control show-tick" asp-items="ViewBag.IdTurma">
+                <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmaTurma</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="DivProcessandoIndex" class="row clearfix invisible">
+        <div class="col-md-2">
+            <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+        </div>
+    </div>
+
+    <div id="DivAluno" class="row clearfix">
+        <div class="col-md-6">
+            <div class="input-group ui-widget">
+                <p>
+                    <b><label class="control-label col-indigo">Aluno</label></b>
+                </p>
+                <div class="form-line">
+                    <input id="txtAluno" name="txtAluno" class="form-control" placeholder="  Digite a matrícula ou o nome" autofocus="" aria-required="true" />
+                </div>
+            </div>
+            <input id="HdnIdAluno" type="hidden" name="HdnIdAluno" />
+        </div>
+        <div class="col-md-2">
+            <p>
+                <label class="control-label col-indigo">&nbsp;</label>
+            </p>
+            <button id="BtnMatricular" name="BtnMatricular" class="btn btn-success">
+                Matricular&nbsp;&nbsp;<i class="far fa-edit"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<input id="HdnPrefixoFileName" type="hidden" value="GradeInscricao" name="HdnPrefixoFileName" />
+
+<div id="DivPartialGrade">
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#DivAluno").hide();
+        ChangeTurma();
+        ChangePeriodo();
+        GetAluno();
+        Matricular();
+    });
+
+    function ChangePeriodo() {
+        $("#ddlPeriodo").change(function () {
+            ProcessandoIndex();
+            $("#ddlTurma").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetTurmas")',
+                dataType: 'json',
+                data: { idPeriodo: $("#ddlPeriodo").val() },
+                success: function (resultTurma) {
+                    if (resultTurma == null) {
+                        $("#ddlTurma").append("<option value=''>Sem turma</option>");
+                    }
+                    else {
+                        $("#ddlTurma").append("<option value=''>Escolha a turma</option>");
+                    }
+                    $.each(resultTurma, function (i, turma) {
+                        $("#ddlTurma").append($('<option>').text(turma.nome).attr('value', turma.id));
+                    });
+                    //$("#ddlTurma").selectpicker('refresh');
+                    //$("#ddlTurma").selectpicker('render');
+                    $("#BtnEditarGrade").hide();
+                    DesativarProcessandoIndex();
+                },
+                error: function (ex) {
+                    DesativarProcessandoIndex();
+                    alert('Erro ao receber turmas');
+                }
+            });
+
+            return false;
+        });
+    }
+
+    function ChangeTurma() {
+        $("#ddlTurma").change(function () {
+            ProcessandoIndex();
+            var val = $("#ddlTurma").val();
+
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetGrade")',
+                data: { idTurma: $("#ddlTurma").val() }
+            })
+            .done(function (result) {
+                if (val == '') {
+                    $("#DivAluno").hide();
+                }
+                else {
+                    if ('@ViewBag.Perfil.Contains("SCHOOLUP_ADMIN")' == 'True') {
+                        $("#DivAluno").show();
+                    }
+                    else {
+                        $("#DivAluno").hide();
+                    }
+                }
+                $("#DivPartialGrade").html(result);
+                DesativarProcessandoIndex();
+            });
+        });
+    }
+
+    function GetAluno() {
+        $("#txtAluno").autocomplete({
+            source: function (request, response) {
+                ProcessandoIndex();
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetAluno")',
+                    data: { filtro: request.term },
+                    success: function (data) {
+                        DesativarProcessandoIndex();
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.matricula + " - " + item.nome,
+                                value: item.matricula + " - " + item.nome,
+                                id: item.id
+                            };
+                        }));
+                    }
+                });
+            },
+            minLength: 3,
+            select: function (event, ui) {
+                $("#txtAluno").val(ui.item.value);
+                $("#txtAluno").text(ui.item.label);
+                $("#HdnIdAluno").val(ui.item.id);
+            }
+        });
+    }
+
+    function Matricular() {
+        $("#BtnMatricular").click(function () {
+            ProcessandoIndex();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Matricular")',
+                data: { idTurma: $("#ddlTurma").val(), idAluno: $("#HdnIdAluno").val() }
+            })
+            .done(function (result) {
+                $("#DivMensagem").html(result);
+                $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetGrade")',
+                data: { idTurma: $("#ddlTurma").val() }
+                })
+                .done(function (resultGrade) {
+                    $("#DivPartialGrade").html(resultGrade);
+                    $("#HdnIdAluno").val("");
+                    $("#txtAluno").val("");
+                    $("#txtAluno").text("");
+                    DesativarProcessandoIndex();
+                });
+            });
+        });
+    }
+</script>

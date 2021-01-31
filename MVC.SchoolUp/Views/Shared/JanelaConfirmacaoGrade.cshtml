@@ -1,0 +1,76 @@
+﻿@{
+    if (ViewBag.Perfil.Contains("SCHOOLUP_ADMIN"))
+    {
+        <div class="modal fade in" id="ConfirmModal" tabindex="-1" role="dialog" aria-labelledby="ConfirmModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="ConfirmModalLabel">Atenção</h4>
+                    </div>
+                    <div class="modal-body">
+                        Deseja realmente excluir este registro?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="BtnConfirm" onclick="ProcessandoIndex(); return true;">Excluir</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $('button.btnExcluirLinha').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).closest('tr').data('id');
+                $('#ConfirmModal').data('id', id).modal('show');
+            });
+
+            $('#BtnConfirm').click(function () {
+                var id = $('#ConfirmModal').data('id');
+                $('#ConfirmModal').addClass('loading');
+                $.ajax({
+                    url: '@Url.Action("ExcluirLinha")',
+                    type: 'POST',
+                    data: { id: id }
+                })
+                    .done(function (mensagem) {
+                        if (mensagem.indexOf("@Modelo.SchoolUp.Recursos.Mensagens.RegistroExcluidoSucesso") != -1) {
+                            var myTable = $('#GridIndex').DataTable();
+                            myTable.row('#'+id).remove().draw();
+                        }
+                    $("#DivMensagem").html(mensagem);
+                    $('#ConfirmModal').modal('hide').removeClass('loading');
+                })
+                    .fail(function (mensagem) {
+                    $("#DivMensagem").html(mensagem);
+                });
+            });
+        </script>
+    }
+    else
+    {
+        <div class="modal fade in" id="ConfirmModal" tabindex="-1" role="dialog" aria-labelledby="ConfirmModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="ConfirmModalLabel">Erro</h4>
+                    </div>
+                    <div class="modal-body">
+                        Seu perfil não tem permissão para esta ação!
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $('button.btnExcluir').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).closest('tr').data('id');
+                $('#ConfirmModal').data('id', id).modal('show');
+            });
+        </script>
+    }
+}

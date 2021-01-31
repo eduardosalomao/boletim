@@ -1,0 +1,84 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmAvaliacao>
+
+<link href='~/lib/fullcalendar-4.3.1/packages/core/main.css' rel='stylesheet' />
+<link href='~/lib/fullcalendar-4.3.1/packages/daygrid/main.css' rel='stylesheet' />
+<link href='~/lib/fullcalendar-4.3.1/packages/timegrid/main.css' rel='stylesheet' />
+<link href='~/lib/fullcalendar-4.3.1/packages/list/main.css' rel='stylesheet' />
+<script src='~/lib/fullcalendar-4.3.1/packages/core/main.js'></script>
+<script src='~/lib/fullcalendar-4.3.1/packages/core/locales-all.js'></script>
+<script src='~/lib/fullcalendar-4.3.1/packages/interaction/main.js'></script>
+<script src='~/lib/fullcalendar-4.3.1/packages/daygrid/main.js'></script>
+<script src='~/lib/fullcalendar-4.3.1/packages/timegrid/main.js'></script>
+<script src='~/lib/fullcalendar-4.3.1/packages/list/main.js'></script>
+<script src="~/lib/moment/moment-with-locales.js"></script>
+
+@if (Model?.Dados?.Any() == true)
+{
+    <script>
+    var initialLocaleCode = 'pt-br';
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+        },
+        defaultDate: moment('@Model.Dados.Max(m => m.De.Value).ToString("yyyy-MM-dd")').format('YYYY-MM-DD'),
+        locale: initialLocaleCode,
+        buttonIcons: true,
+        weekNumbers: false,
+        navLinks: true,
+        editable: false,
+        displayEventEnd: true,
+        eventLimit: true,
+        eventRender: function (info) {
+            $(info.el).popover({
+                content: info.event.extendedProps.description,
+                placement: 'top',
+                html: true,
+                trigger: 'hover',
+                animation: true,
+                container: 'body'
+            });
+        },
+        events: [
+            @{
+                string dataCalendar = "";
+                foreach (var item in Model.Dados)
+                {
+                    dataCalendar += "{" + $"title: '{item.NomeDisciplina}',"
+                        + $"description: '<b>Avaliação: </b>' + '{item.NomeAvaliacao}'"
+                        + $"+ '<br /><b>Disiplina: </b>' + '{item.NomeDisciplina}'"
+                        + $"+ '<br /><b>Professor: </b>' + '{item.NomeProfessor}'"
+                        + $"+ '<br /><b>De: </b>' + '{item.De.Value.ToString("HH:mm")}'"
+                        + $"+ '<br /><b>Até: </b>' + '{item.Ate.Value.ToString("HH:mm")}',"
+                        + $"start: '{item.De.Value.ToString("yyyy-MM-ddTHH:mm:ss")}',"
+                        + $"end: '{item.Ate.Value.ToString("yyyy-MM-ddTHH:mm:ss")}'"
+                        + "},";
+                }
+            }
+            @Html.Raw(dataCalendar)
+        ]
+    });
+
+    calendar.render();
+    </script>
+}
+else
+{
+    <p>
+        @ViewBag.LblMensagem
+    </p>
+}
+
+<style>
+    #calendar {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 10px;
+    }
+</style>
+
+<div id='calendar'></div>

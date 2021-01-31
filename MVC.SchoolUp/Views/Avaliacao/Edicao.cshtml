@@ -1,0 +1,131 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmDisciplinaHorario>
+
+@{
+    ViewBag.TituloPagina = "Grade Turma";
+    Layout = "~/Views/Shared/PaginaBaseGrade.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Grade Turma";
+    ViewBag.Action = "Edicao";
+    ViewBag.View = "Grade";
+}
+
+<link href="~/MeuBoletim/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
+
+<!-- Jquery DataTable Plugin Js -->
+<script src="~/MeuBoletim/plugins/jquery-datatable/jquery.dataTables.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/buttons.flash.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/jszip.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/pdfmake.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/vfs_fonts.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/buttons.html5.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/buttons.print.min.js"></script>
+<script src="~/js/grade.js"></script>
+
+<br />
+<br />
+
+<input id="HdnPrefixoFileName" type="hidden" value="GradeTurma" name="HdnPrefixoFileName" />
+<input id="HdnIdTurma" type="hidden" value="@ViewBag.IdTurma" />
+
+@{
+    if (Model.Dados?.Count > 0)
+    {
+        <div class="body">
+            <div class="table-responsive">
+                <table id="GridIndex" class="table table-bordered table-striped table-hover dataTable">
+                    <thead>
+                        <tr>
+                            <th>Tempo</th>
+                            @foreach (var diaSemana in Modelo.SchoolUp.Enumeracao.DiasSemana.ObterDiasSemana().OrderBy(o => o.dia))
+                            {
+                                <th>
+                                    @Html.DisplayFor(modelItem => diaSemana.nomeDia)
+                                </th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            Int32 linha = 0;
+                            foreach (var item in Model.Dados.GroupBy(g => g.nomeHorarioTurno))
+                            {
+                                Int32 coluna = 0;
+                                <tr>
+                                    <td>
+                                        <b>@Html.DisplayFor(modelItem => item.FirstOrDefault().nomeHorarioTurno)</b><br />@{string inicioTempo = String.Format("{0:hh\\:mm}", item.FirstOrDefault().Inicio.Value);
+                                            string fimTempo = String.Format("{0:hh\\:mm}", item.FirstOrDefault().Termino.Value); @Html.DisplayFor(modelItem => inicioTempo)} -
+                                        @Html.DisplayFor(modelItem => fimTempo)
+                                    </td>
+                                    @foreach (var diasSemana in Modelo.SchoolUp.Enumeracao.DiasSemana.ObterDiasSemana().OrderBy(o => o.dia))
+                                    {
+                                        <td>
+                                            <p title="Disciplina">
+                                                @{ Guid? itemIdDisciplina = item.Where(i => i.Dia == diasSemana.dia).FirstOrDefault()?.IdDisciplina;
+
+                                                }
+                                                <select id='@String.Format("Disc_{0}_{1}", linha, coluna)' name='@String.Format("Disc_{0}_{1}", linha, coluna)' class="form-control show-tick" placeholder="Nenhum">
+                                                    @{
+                                                        if (itemIdDisciplina == null)
+                                                        {
+                                                            <option value="" selected="selected">Nenhuma</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="">Nenhuma</option>
+                                                        }
+                                                        foreach (var dadosDisciplina in ViewBag.IdDisciplina)
+                                                        {
+                                                            if (itemIdDisciplina != null && itemIdDisciplina.Value.ToString() == dadosDisciplina.Value)
+                                                            {
+                                                                <option value="@dadosDisciplina.Value" selected="selected">@dadosDisciplina.Text</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@dadosDisciplina.Value">@dadosDisciplina.Text</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+                                            </p>
+                                            <p title="Professor">
+                                                @{ Guid? itemIdProfessor = item.Where(i => i.Dia == diasSemana.dia).FirstOrDefault()?.IdProfessor;
+                                                    <select id='@String.Format("Prof_{0}_{1}", linha, coluna)' name='@String.Format("Prof_{0}_{1}", linha, coluna)' class="form-control show-tick" placeholder="Nenhum">
+                                                        @{
+                                                            if (itemIdProfessor == null)
+                                                            {
+                                                                <option value="" selected="selected">Nenhum</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="">Nenhuma</option>
+                                                            }
+                                                            foreach (var dadosProfessor in ViewBag.IdProfessor)
+                                                            {
+                                                                if (itemIdProfessor != null && itemIdProfessor.Value.ToString() == dadosProfessor.Value)
+                                                                {
+                                                                    <option value="@dadosProfessor.Value" selected="selected">@dadosProfessor.Text</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="@dadosProfessor.Value">@dadosProfessor.Text</option>
+                                                                }
+                                                            }
+                                                        }
+
+                                                    </select>
+                                                }
+                                            </p>
+                                        </td>
+                                        coluna++;
+                                    }
+                                </tr>
+                                linha++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+}

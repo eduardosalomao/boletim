@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Auxiliar\BllDisciplina.cs~RF2dc656f5.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Acesso.SchoolUp\Acesso.SchoolUp.csproj" />
+    <ProjectReference Include="..\Modelo.SchoolUp\Modelo.SchoolUp.csproj" />
+    <ProjectReference Include="..\Repositorio.Nucleo\Repositorio.Nucleo.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Acesso.Nucleo">
+      <HintPath>..\Repositorio.Nucleo\Acesso.Nucleo.dll</HintPath>
+    </Reference>
+    <Reference Include="Modelo.Nucleo">
+      <HintPath>..\Repositorio.Nucleo\Modelo.Nucleo.dll</HintPath>
+    </Reference>
+    <Reference Include="Negocio.Nucleo">
+      <HintPath>..\Repositorio.Nucleo\Negocio.Nucleo.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

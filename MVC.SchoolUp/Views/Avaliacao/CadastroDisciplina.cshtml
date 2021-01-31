@@ -1,0 +1,41 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Principal.Avaliacao>
+
+@{
+    ViewBag.TituloPagina = "Calendário";
+    Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Avaliação Disiciplina";
+    ViewBag.Action = "CadastroDisciplina";
+    ViewBag.View = "Avaliacao";
+}
+
+<input asp-for="Dados.FirstOrDefault().Id" type="hidden" value="@ViewBag.Id" />
+<input asp-for="Dados.FirstOrDefault().IdTurma" type="hidden" value="@ViewBag.IdTurma" />
+<input asp-for="Dados.FirstOrDefault().IdSubPeriodo" type="hidden" value="@ViewBag.IdSubPeriodo" />
+<div class="row clearfix">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="body">
+                <div class="row clearfix">
+                    <div class="col-md-12">
+                        <p>
+                            <label asp-for="Dados.FirstOrDefault().IdProfessorDisciplina" class="control-label col-indigo"></label>
+                        </p>
+                        <select asp-for="Dados.FirstOrDefault().IdProfessorDisciplina" class="form-control show-tick" asp-items="ViewBag.IdProfessorDisciplina" placeholder="@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem">
+                            <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+                        </select>
+                        <span asp-validation-for="Dados.FirstOrDefault().IdProfessorDisciplina" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var linkVoltar = document.getElementById('BtnCadastroVoltar');
+        linkVoltar.setAttribute("href", "/Avaliacao/Disciplina");
+        var linkNovo = document.getElementById('BtnCadastroNovo');
+        linkNovo.setAttribute("href", "/Avaliacao/CadastroDisciplina/" + $("#IdTurma").val() + "/" + $("#IdSubPeriodo").val());
+    });
+</script>

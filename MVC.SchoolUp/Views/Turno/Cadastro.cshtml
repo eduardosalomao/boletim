@@ -1,0 +1,57 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Principal.Turno>
+
+@{
+    ViewBag.TituloPagina = "Tempo";
+    Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Turno";
+    ViewBag.Action = "Cadastro";
+    ViewBag.View = "Turno";
+}
+
+<input asp-for="Dados.FirstOrDefault().Id" type="hidden" value="@ViewBag.Id" />
+<div class="row clearfix">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="body">
+                <div class="row clearfix">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Nome" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Nome" class="form-control" placeholder="Digite o nome" autofocus="" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Nome" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row clearfix">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Inicio" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Inicio" placeholder="hh:mm" class="form-control" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Inicio" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Termino" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Termino" placeholder="hh:mm" class="form-control" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Termino" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

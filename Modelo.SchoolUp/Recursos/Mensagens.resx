@@ -1,0 +1,348 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AcessoNaoIdentificado" xml:space="preserve">
+    <value>Acesso não identificado!</value>
+  </data>
+  <data name="AlteracaoBD" xml:space="preserve">
+    <value>alteração</value>
+  </data>
+  <data name="ArquivoExtensaoInvalida" xml:space="preserve">
+    <value>O arquivo {0} possui uma extensão inválida. As extensões válidas são: {1}!</value>
+  </data>
+  <data name="ArquivoTamanhoMaximo" xml:space="preserve">
+    <value>O arquivo não deve exceder o tamanho máximo de 1MB!</value>
+  </data>
+  <data name="CampoCaracteresProibidos" xml:space="preserve">
+    <value>Os caracteres {0} não são permitidos para o campo {1}!</value>
+  </data>
+  <data name="CampoDataInvalida" xml:space="preserve">
+    <value>O campo {0} possui uma data inválida!</value>
+  </data>
+  <data name="CampoEntre" xml:space="preserve">
+    <value>O campo {0} deve estar entre {1} e {2}!</value>
+  </data>
+  <data name="CampoExcessoCaracteres" xml:space="preserve">
+    <value>O campo {0} não pode exceder {1} caracteres!</value>
+  </data>
+  <data name="CampoExcessoCaracteresDescricao" xml:space="preserve">
+    <value>O campo {0} não pode exceder {1} caracteres, incluindo caracteres ocultos relacionados à formatação!</value>
+  </data>
+  <data name="CampoInvalido" xml:space="preserve">
+    <value>Campo {0} inválido</value>
+  </data>
+  <data name="CampoMaiorIgualAnterior" xml:space="preserve">
+    <value>O campo {0} deve ser maior ou igual aos anteriores!</value>
+  </data>
+  <data name="CampoMaiorIgualCampo" xml:space="preserve">
+    <value>O campo {0} deve ser maior ou igual ao campo {1}!</value>
+  </data>
+  <data name="CampoMaiorQue" xml:space="preserve">
+    <value>O campo {0} deve ser maior que {1}!</value>
+  </data>
+  <data name="CampoMenorIgualA" xml:space="preserve">
+    <value>O campo {0} deve ser menor ou igual a {1}!</value>
+  </data>
+  <data name="CampoMenorIgualCampo" xml:space="preserve">
+    <value>O campo {0} deve ser menor ou igual ao campo {1}!</value>
+  </data>
+  <data name="CampoMenorIgualHoje" xml:space="preserve">
+    <value>O campo {0} deve ser menor ou igual a hoje!</value>
+  </data>
+  <data name="CampoMenorIgualQue" xml:space="preserve">
+    <value>O campo {0} deve ser menor ou igual que {1}!</value>
+  </data>
+  <data name="CampoObrigatorio" xml:space="preserve">
+    <value>O campo {0} é obrigatório!</value>
+  </data>
+  <data name="CampoObrigatorioPorOutro" xml:space="preserve">
+    <value>O campo {0} é obrigatório quando o campo {1} estiver preenchido!</value>
+  </data>
+  <data name="CampoSomenteLetras" xml:space="preserve">
+    <value>O campo {0} aceita somente letras!</value>
+  </data>
+  <data name="CampoTamanhoEntre" xml:space="preserve">
+    <value>O campo {0} deve ter tamanho entre {2} e {1}!</value>
+  </data>
+  <data name="CaracterePulaLinha" xml:space="preserve">
+    <value>&lt;br /&gt;</value>
+  </data>
+  <data name="ConsultaBD" xml:space="preserve">
+    <value>Consulta</value>
+  </data>
+  <data name="DownloadArquivoInexistente" xml:space="preserve">
+    <value>O arquivo não foi encontrado!</value>
+  </data>
+  <data name="EmailExistente" xml:space="preserve">
+    <value>Email já cadastrado!</value>
+  </data>
+  <data name="EmConstrucao" xml:space="preserve">
+    <value>Esta página encontra-se em construção.</value>
+  </data>
+  <data name="Erro" xml:space="preserve">
+    <value>Erro</value>
+  </data>
+  <data name="ErroBD" xml:space="preserve">
+    <value>Erro no acesso ao banco de dados durante a {0} do objeto!</value>
+  </data>
+  <data name="ErroInesperado" xml:space="preserve">
+    <value>Ocorreu um erro inesperado!</value>
+  </data>
+  <data name="ExcessoAnexos" xml:space="preserve">
+    <value>{0} {1} não pode exceder {2} anexos!</value>
+  </data>
+  <data name="ExcessoCaracteres" xml:space="preserve">
+    <value>{0} {1} não pode exceder {2} caracteres!</value>
+  </data>
+  <data name="ExcluidoSucesso" xml:space="preserve">
+    <value>{0} excluíd{1}!</value>
+  </data>
+  <data name="ExcluirSemSelecionar" xml:space="preserve">
+    <value>Selecione ao menos um registro para excluir!</value>
+  </data>
+  <data name="ExclusaoBD" xml:space="preserve">
+    <value>exclusão</value>
+  </data>
+  <data name="GravadoSucesso" xml:space="preserve">
+    <value>{0} gravad{1}!</value>
+  </data>
+  <data name="InclusaoBD" xml:space="preserve">
+    <value>inclusão</value>
+  </data>
+  <data name="LoginEfetuado" xml:space="preserve">
+    <value>Login efetuado com sucesso!</value>
+  </data>
+  <data name="LoginExistente" xml:space="preserve">
+    <value>Login já cadastrado!</value>
+  </data>
+  <data name="LogoutEfetuado" xml:space="preserve">
+    <value>Logout efetuado com sucesso!</value>
+  </data>
+  <data name="MensagemRetorno" xml:space="preserve">
+    <value>{0} Por favor, repita a operação. Caso o erro persista, entre em contato com o suporte técnico e informe o código: </value>
+  </data>
+  <data name="ObjetoNulo" xml:space="preserve">
+    <value>Nenhum dado foi carregado ou o item não existe mais!</value>
+  </data>
+  <data name="PeloMenosUmaOpcao" xml:space="preserve">
+    <value>Preencha com {0} {1} ou {2} {3}</value>
+  </data>
+  <data name="PerfilSemAcesso" xml:space="preserve">
+    <value>Seu perfil não tem permissão para executar esta ação.</value>
+  </data>
+  <data name="PesquisaBD" xml:space="preserve">
+    <value>pesquisa</value>
+  </data>
+  <data name="RegistroCadastrado" xml:space="preserve">
+    <value>{0} já cadastrad{1} para {2} {3}!</value>
+  </data>
+  <data name="RegistroExcluidoSucesso" xml:space="preserve">
+    <value>Registro excluído com sucesso!</value>
+  </data>
+  <data name="RegistroExistente" xml:space="preserve">
+    <value>{0} {1} informad{2} já existe!</value>
+  </data>
+  <data name="RegistroGravadoSucesso" xml:space="preserve">
+    <value>Registro gravado com sucesso!</value>
+  </data>
+  <data name="RegistroRelacionado" xml:space="preserve">
+    <value>{0} {1} não pode ser excluíd{2} pois está selecionad{3} por um{4} {5}!</value>
+  </data>
+  <data name="SelecaoBD" xml:space="preserve">
+    <value>Seleção</value>
+  </data>
+  <data name="SemAcesso" xml:space="preserve">
+    <value>O usuário não possui acesso ao sistema!</value>
+  </data>
+  <data name="SemPermissao" xml:space="preserve">
+    <value>O usuário não possui acesso a esta página!</value>
+  </data>
+  <data name="SemRegistroEncontrado" xml:space="preserve">
+    <value>Nenhum registro encontrado!</value>
+  </data>
+  <data name="SemSelecao" xml:space="preserve">
+    <value>Nenhum item foi selecionado ou o item não existe mais!</value>
+  </data>
+  <data name="SenhaAlterada" xml:space="preserve">
+    <value>Senha alterada com sucesso!</value>
+  </data>
+  <data name="SenhaNaoAlterada" xml:space="preserve">
+    <value>Senha atual incorreta.</value>
+  </data>
+  <data name="SenhaRegex" xml:space="preserve">
+    <value>A Nova senha deve conter 8 caracteres com pelo menos uma letra maiúscula e uma minúscula, um número e um caractere especial!</value>
+  </data>
+  <data name="SenhasDiferentes" xml:space="preserve">
+    <value>{0} e {1} são diferentes!</value>
+  </data>
+  <data name="SessaoExpirada" xml:space="preserve">
+    <value>Sua sessão expirou! Favor efetuar novo login.</value>
+  </data>
+  <data name="UploadArquivoVazio" xml:space="preserve">
+    <value>O arquivo {0} não pode ser vazio.</value>
+  </data>
+  <data name="UploadSomenteUm" xml:space="preserve">
+    <value>Selecione apenas um arquivo!</value>
+  </data>
+  <data name="UsuarioBloqueado" xml:space="preserve">
+    <value>Usuário bloqueado!</value>
+  </data>
+  <data name="UsuarioNaoAutenticado" xml:space="preserve">
+    <value>Usuário não autenticado!</value>
+  </data>
+  <data name="UsuarioSenhaIncorreto" xml:space="preserve">
+    <value>Usuário ou senha incorretos!</value>
+  </data>
+  <data name="FormatoIncorreto" xml:space="preserve">
+    <value>Formato não reconhecido!</value>
+  </data>
+  <data name="SomenteSuaConta" xml:space="preserve">
+    <value>Um usuário só pode gerenciar dados de sua própria conta!</value>
+  </data>
+  <data name="AcessoCriado" xml:space="preserve">
+    <value>Acesso criado com sucesso!</value>
+  </data>
+  <data name="MatriculaNascimentoNaoCorrespondem" xml:space="preserve">
+    <value>Os campos Matrícula ou Data de Nascimento não correspondem ao aluno selecionado! </value>
+  </data>
+  <data name="ObjetoExcluidoInativo" xml:space="preserve">
+    <value>Nenhum {0} ativo encontrado!</value>
+  </data>
+  <data name="ObjetoNaoEncontrado" xml:space="preserve">
+    <value>Nenhum {0} encontrado!</value>
+  </data>
+  <data name="EmailEnviado" xml:space="preserve">
+    <value>Email com a nova senha enviado!</value>
+  </data>
+  <data name="EmailEnviadoSenhaNaoAlterada" xml:space="preserve">
+    <value>Atenção! Um email foi enviado mas ocorreu um erro ao gerar a nova senha. </value>
+  </data>
+  <data name="EmailInexistente" xml:space="preserve">
+    <value>Email não cadastrado!</value>
+  </data>
+  <data name="EmailNaoEnviado" xml:space="preserve">
+    <value>Ocorreu um erro inesperado e o email não foi enviado! </value>
+  </data>
+  <data name="ErroSuporte" xml:space="preserve">
+    <value>Favor entrar em contato com o suporte e informar o código {0}</value>
+  </data>
+  <data name="DataInvalida" xml:space="preserve">
+    <value>Data Inválida</value>
+  </data>
+</root>

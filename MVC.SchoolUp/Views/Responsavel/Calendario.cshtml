@@ -1,0 +1,166 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmAvaliacao>
+
+@{
+    ViewBag.TituloPagina = "Calendário Prova";
+    //Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Grade Turma";
+    ViewBag.Action = "Edicao";
+    ViewBag.View = "Avaliacao";
+}
+
+<meta charset='utf-8' />
+
+<div class="form-group">
+    <div class="row clearfix">
+        <div id="DivPeriodo" class="col-md-2">
+            <p>
+                <label class="control-label col-indigo">Período</label>
+            </p>
+            <select id="ddlPeriodo" name="ddlPeriodo" class="form-control show-tick" asp-items="ViewBag.IdPeriodo"></select>
+        </div>
+        <div class="col-md-2">
+            <p>
+                <label class="control-label col-indigo" id="11" title="teste">Bimestre</label>
+            </p>
+            <select id="ddlBimestre" name="ddlBimestre" class="form-control show-tick" asp-items="ViewBag.IdSubPeriodo"></select>
+        </div>
+        <div id="DivTurma" class="col-md-2">
+            <p>
+                <label class="control-label col-indigo">Turma</label>
+            </p>
+            <select id="ddlTurma" name="ddlTurma" class="form-control show-tick" asp-items="ViewBag.IdTurma">
+            </select>
+        </div>
+    </div>
+    <div id="DivProcessandoIndex" class="col-md-2 invisible">
+        <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+    </div>
+</div>
+
+<div id="DivMensagem">
+    @{
+        Html.RenderPartial("JanelaMensagem");
+    }
+</div>
+
+<input id="HdnIdTurmaAluno" type="hidden" value="@ViewBag.IdTurmaAluno" name="HdnIdTurmaAluno" />
+<input id="HdnPrefixoFileName" type="hidden" value="CalendarioProva" name="HdnPrefixoFileName" />
+<div class="card" style="overflow: auto;">
+    <div id="DivPartialGrade">
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        CarregarGrade();
+        ChangePeriodo();
+        ChangeTurma();
+        ChangeSubPeriodo();
+    });
+
+    function ProcessandoIndex() {
+        $("#DivProcessandoIndex").removeClass("invisible");
+    }
+
+    function DesativarProcessandoIndex() {
+        $("#DivProcessandoIndex").addClass("invisible");
+    }
+
+    function ChangePeriodo() {
+        $("#ddlPeriodo").change(function () {
+            ProcessandoIndex();
+            $("#ddlBimestre").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetSubPeriodo")',
+                dataType: 'json',
+                data: { idPeriodo: $("#ddlPeriodo").val() },
+                success: function (resultSubPeriodo) {
+                    if (resultSubPeriodo.dados == null) {
+                        $("#ddlBimestre").append("<option value=''>Sem bimestre</option>");
+                    }
+                    else {
+                        $("#ddlBimestre").append("<option value=''>Escolha o bimestre</option>");
+                    }
+                    $.each(resultSubPeriodo.dados, function (i, subPeriodo) {
+                        if (resultSubPeriodo.id == subPeriodo.id.toString()) {
+                            $("#ddlBimestre").append($('<option selected>').text(subPeriodo.nome).attr('value', subPeriodo.id));
+                        }
+                        else {
+                            $("#ddlBimestre").append($('<option>').text(subPeriodo.nome).attr('value', subPeriodo.id));
+                        }
+                    });
+                    //$("#ddlBimestre").selectpicker('refresh');
+                    //$("#ddlBimestre").selectpicker('render');
+                    DesativarProcessandoIndex();
+                },
+                error: function (ex) {
+                    DesativarProcessandoIndex();
+                    alert('Erro ao receber bimestres');
+                }
+            });
+
+            $("#ddlTurma").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetTurmasAluno")',
+                dataType: 'json',
+                data: { idPeriodo: $("#ddlPeriodo").val(), idTurmaAluno: $("#HdnIdTurmaAluno").val() },
+                success: function (resultTurma) {
+                    if (resultTurma == null) {
+                        $("#ddlTurma").append("<option value=''>Sem turma</option>");
+                    }
+                    else {
+                        $("#ddlTurma").append("<option value=''>Escolha a turma</option>");
+                    }
+                    $.each(resultTurma, function (i, turma) {
+                        $("#ddlTurma").append($('<option>').text(turma.nome).attr('value', turma.id));
+                    });
+                    //$("#ddlTurma").selectpicker('refresh');
+                    //$("#ddlTurma").selectpicker('render');
+                    DesativarProcessandoIndex();
+                },
+                error: function (ex) {
+                    DesativarProcessandoIndex();
+                    alert('Erro ao receber turmas');
+                }
+            });
+
+            return false;
+        });
+    }
+
+    function ChangeSubPeriodo() {
+        $("#ddlBimestre").change(function () {
+            CarregarGrade();
+            return false;
+        });
+    }
+
+    function ChangeTurma() {
+        $("#ddlTurma").change(function () {
+            CarregarGrade();
+            return false;
+        });
+    }
+
+    function CarregarGrade() {
+        ProcessandoIndex();
+        var valTurma = $("#ddlTurma").val();
+        var valBimestre = $("#ddlBimestre").val();
+        if (valTurma == null || valTurma == "" || valBimestre == null || valBimestre == "") {
+            DesativarProcessandoIndex();
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetCalendario")',
+                data: { idTurma: valTurma, idSubPeriodo: valBimestre }
+            })
+            .done(function (result) {
+                $("#DivPartialGrade").html(result);
+                DesativarProcessandoIndex();
+            });
+        }
+    }
+</script>

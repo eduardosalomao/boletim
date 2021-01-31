@@ -1,0 +1,74 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmTurmaAluno>
+
+<link href="~/lib/data-tables/datatables.min.css" rel="stylesheet" />
+<link href="~/lib/data-tables/DataTables-1.10.20/css/dataTables.bootstrap4.css" rel="stylesheet" />
+
+<script src="~/lib/data-tables/datatables.min.js"></script>
+<script src="~/lib/data-tables/DataTables-1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="~/lib/data-tables/DataTables-1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/buttons.bootstrap4.min.js"></script>
+<script src="~/lib/data-tables/Buttons-1.6.1/js/buttons.html5.min.js"></script>
+<script src="~/js/grade.js"></script>
+
+@{
+    if (Model.Dados?.Count > 0)
+    {
+        <div class="card">
+            <div class="body">
+                <div class="table-responsive">
+                    <table id="GridIndex" class="table table-bordered table-striped table-hover dataTable">
+                        <thead>
+                            <tr>
+                                <th class="d-none d-sm-table-cell">@Html.DisplayNameFor(modelItem => Model.Dados.FirstOrDefault().AlunoMatricula)</th>
+                                <th>Nome</th>
+                                <th class="d-none d-sm-table-cell">@Html.DisplayNameFor(modelItem => Model.Dados.FirstOrDefault().AlunoDataNascimento)</th>
+                                @if (ViewBag.Perfil.Contains("SCHOOLUP_ADMIN"))
+                                {
+                                    <th style="width:100px!important" class="mx-auto"></th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Dados)
+                            {
+                                <tr class="btnExcluir" id="@item.Id" data-id="@item.Id">
+                                    <td class="d-none d-sm-table-cell">
+                                        @Html.DisplayFor(modelItem => item.AlunoMatricula)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.AlunoNome)
+                                    </td>
+                                    <td class="d-none d-sm-table-cell">
+                                        @{
+                                            string dataNascimento = String.Format("{0:dd/MM/yyyy}", item.AlunoDataNascimento.Value.ToShortDateString());
+                                            @Html.DisplayFor(modelItem => dataNascimento)
+                                        }
+                                    </td>
+                                    @if (ViewBag.Perfil.Contains("SCHOOLUP_ADMIN"))
+                                    {
+                                        <td style="width:100px!important" align="center">
+                                            <button type="button" class="btn btn-danger btnExcluirLinha">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                    }
+                                </tr>
+                                    }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+    <p>
+        @ViewBag.LblMensagem
+    </p>
+    }
+}
+
+@{
+    Html.RenderPartial("JanelaConfirmacaoGrade");
+}

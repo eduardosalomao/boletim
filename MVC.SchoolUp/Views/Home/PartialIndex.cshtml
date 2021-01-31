@@ -1,0 +1,675 @@
+﻿@model Modelo.SchoolUp.Custom.CmPrincipalAdmin
+
+<link href="~/lib/animate-css/animate.css" rel="stylesheet" />
+<link href="~/lib/morrisjs/morris.css" rel="stylesheet" />
+<script src="~/lib/chartjs/Chart.min.js"></script>
+<script src="~/lib/jquery-countto/jquery.countTo.js"></script>
+<script src="~/lib/raphael/raphael.js"></script>
+<script src="~/lib/morrisjs/morris.js"></script>
+
+@{
+    if (Model?.Bimestres?.Any() != true)
+    {
+        <h3>Nenhum bimestre criado.</h3>
+        return;
+    }
+}
+
+<ul class="nav nav-pills" role="tablist">
+    @{
+        string bimestreAtual = Model.Bimestres.Where(i => i.De <= DateTime.Today && i.Ate >= DateTime.Today)?.FirstOrDefault()?.Nome;
+        bimestreAtual = bimestreAtual == null ? Model.Bimestres.OrderBy(o => o.Nome).FirstOrDefault().Nome : bimestreAtual;
+
+        foreach (var item in Model.Bimestres.OrderBy(o => o.Nome))
+        {
+            string itemName = item.Nome.Replace(" ", "");
+            string liId = $"Li{itemName}";
+            string hrefDiv = $"#Div{itemName}";
+            string classActive = "";
+            string ariaSelected = "false";
+
+            if (item.Nome == bimestreAtual)
+            {
+                classActive = "active";
+                ariaSelected = "true";
+            }
+
+            <li id='@liId.Replace("'", "")' role="presentation" class="nav-item">
+                <a href='@hrefDiv.Replace("'", "")' class="nav-link @classActive" data-toggle="tab" role="tab" aria-controls="@itemName" aria-selected="@ariaSelected">
+                    @item.Nome
+                </a>
+            </li>
+        }
+
+        @if (!String.IsNullOrEmpty(Model.IdAluno) && Model.Bimestres.Count() > 1)
+        {
+            <li id='LiTotalMedia' role="presentation" class="nav-item">
+                <a href='#DivTotalMedia' class="nav-link" data-toggle="tab" role="tab" aria-controls="TotalMedia" aria-selected="false">
+                    Total Pontos/Média
+                </a>
+            </li>
+        }
+    }
+</ul>
+
+<div class="tab-content">
+    @{
+        foreach (var bimestre in Model.Bimestres.OrderBy(o => o.Nome))
+        {
+            string divId = $"Div{bimestre.Nome.Replace(" ", "")}";
+            string radarId = $"Radar{bimestre.Id.ToString()}";
+            string classActive = "flipInX";
+
+            if (bimestre.Nome == bimestreAtual)
+            {
+                classActive = "fadeInRight active";
+            }
+
+            <div role="tabpanel" class="tab-pane animated @classActive" id="@divId">
+                @{
+                    if (Model.Turmas == null || !Model.Turmas.Any())
+                    {
+                        <h5>Nenhuma turma criada.</h5>
+                        return;
+                    }
+                    if (Model.Bimestres == null || !Model.Bimestres.Any())
+                    {
+                        <h5>Nenhum bimestre criado.</h5>
+                        return;
+                    }
+                    if (Model.Disciplinas == null || !Model.Disciplinas.Any())
+                    {
+                        <h5>Nenhuma nota lançada.</h5>
+                        return;
+                    }
+
+                    foreach (var turma in Model.Turmas.OrderBy(o => o.Nome))
+                    {
+                        <div>
+                            <h4>@turma.Nome</h4>
+
+                            <div class="row clearfix">
+                                @{
+                                    int qtdeDisciplina = 1;
+                                    var disciplinas = Model.Disciplinas.Where(i => i.IdSubPeriodo == bimestre.Id && i.IdTurma == turma.Id);
+
+                                    if (disciplinas?.Any() != true)
+                                    {
+                                        <h5>Nenhuma nota lançada.</h5>
+                                    }
+                                    else
+                                    {
+                                        foreach (var disciplina in disciplinas)
+                                        {
+                                            string nota = disciplina.MediaNotas.HasValue ? disciplina.MediaNotas.Value.ToString("##.#").Replace(",", ".") : null;
+                                            string notaRecuperacao = disciplina.MediaNotasRecuperacao.HasValue ? disciplina.MediaNotasRecuperacao.Value.ToString("##.#").Replace(",", ".") : null;
+                                            string faltas = disciplina.MediaFaltas.HasValue ? disciplina.MediaFaltas.Value.ToString("##.#").Replace(",", ".") : null;
+
+
+                                            string corFundo = "bg-cyan";
+                                            string icone = "<i class='fas fa-award'></i>";
+                                            if ((disciplina.MediaNotas.HasValue && !disciplina.MediaNotasRecuperacao.HasValue && Math.Round(disciplina.MediaNotas.Value, 1) < Math.Round(Model.PeriodoAtual.MediaAprovacao, 1)) ||
+                                            (disciplina.MediaNotas.HasValue && disciplina.MediaNotasRecuperacao.HasValue && Math.Round(disciplina.MediaNotasRecuperacao.Value, 1) < Math.Round(Model.PeriodoAtual.MediaAprovacao, 1)
+                                            && Math.Round(disciplina.MediaNotas.Value, 1) < Math.Round(Model.PeriodoAtual.MediaAprovacao, 1))
+                                            || (!disciplina.MediaNotas.HasValue && disciplina.MediaNotasRecuperacao.HasValue && Math.Round(disciplina.MediaNotasRecuperacao.Value, 1) < Math.Round(Model.PeriodoAtual.MediaAprovacao)))
+                                            {
+                                                corFundo = "bg-red";
+                                                icone = "<i class='fas fa-exclamation-triangle'></i>";
+                                            }
+
+                                            if (disciplina.MediaNotas.HasValue || disciplina.MediaNotasRecuperacao.HasValue)
+                                            {
+                                                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                                    <div class="info-box @corFundo hover-expand-effect">
+                                                        <div class="icon">
+                                                            @Html.Raw(icone)
+                                                        </div>
+                                                        <div class="content">
+                                                            <div class="text">@disciplina.NomeDisciplina</div>
+                                                            <div class="form-row">
+                                                                @if (disciplina.MediaNotas.HasValue)
+                                                                {
+                                                                    <div class="number count-to col-xs-4" style="text-align:center!important" title="Nota" data-from="0" data-decimals="1" data-to="@nota" data-speed="2000" data-fresh-interval="0.1"></div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div class="number col-xs-3" style="text-align:center!important" title="Nota">&nbsp;-</div>
+                                                                }
+                                                                @if (disciplina.MediaNotasRecuperacao.HasValue)
+                                                                {
+                                                                    <div class="number count-to col-xs-4" title="Nota Recuperação" style="color:darkorange!important;text-align:center!important" data-from="0" data-decimals="1" data-to="@notaRecuperacao" data-speed="2000" data-fresh-interval="0.1"></div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div class="number col-xs-3" title="Nota Recuperação" style="color:darkorange!important;text-align:center!important">&nbsp;-</div>
+                                                                }
+                                                                @if (disciplina.MediaFaltas.HasValue)
+                                                                {
+                                                                    <div class="count-to col-xs-offset-2 col-xs-2" title="Faltas" style="font-size:larger!important;font-weight:bolder!important;color:lightslategrey!important;text-align:left!important" data-from="0" data-decimals="0" data-to="@faltas" data-speed="2000" data-fresh-interval="1"></div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div class="col-xs-offset-2 col-xs-2" title="Faltas" style="font-size:larger!important;font-weight:bolder!important;color:lightslategrey!important;text-align:left!important">&nbsp;-</div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            qtdeDisciplina++;
+                                        }
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
+                    <script>
+                        $(function () {
+                            $('.count-to').countTo();
+                        });
+                    </script>
+
+                    if (!String.IsNullOrEmpty(Model.IdAluno) && Model.DisciplinasRadar.Any(a => a.IdSubPeriodo == bimestre.Id) && (Model.Disciplinas.Where(i => i.IdSubPeriodo == bimestre.Id).Count() > 2))
+                    {
+                        var listMyDisciplinas = Model.Disciplinas.Where(i => i.IdSubPeriodo == bimestre.Id).Select(s => s.IdDisciplina).Distinct().ToList();
+                        var disciplinasRadar = Model.DisciplinasRadar.Where(w => w.IdSubPeriodo == bimestre.Id && listMyDisciplinas.Contains(w.IdDisciplina)).ToList();
+
+                        <div class="wrapper" style="text-align:center">
+                            <center><canvas id="@radarId" width="460" height="460"></canvas></center>
+
+                            <script>
+                            var data = {
+                                labels: ['@Html.Raw(String.Join("','", Model.Disciplinas.Where(i => i.IdSubPeriodo == bimestre.Id).Select(s => s.NomeDisciplina).Distinct().ToList()))'],
+                                datasets: [{
+                                    label: '@Html.Raw("Minhas Notas")',
+                                    fillColor: "rgba(238, 197, 35,0.5)",
+                                    strokeColor: "rgba(238, 197, 35,0.5)",
+                                    pointColor: "rgba(238, 197, 35,0.5)",
+                                    pointStrokeColor: "#fff",
+                                    pointHighlightFill: "#fff",
+                                    pointHighlightStroke: "rgba(238, 197, 35,0.5)",
+                                    data: [@String.Join(",", Model.Disciplinas.Where(i => i.IdSubPeriodo == bimestre.Id).Select(s => s.MediaAposRecuperacao.HasValue ? (s.MediaAposRecuperacao).ToString().Replace(",", ".") : "0").ToList())],
+                                },
+                                    {
+                                    label: '@Html.Raw("Média da Turma")',
+                                    fillColor: "rgba(9, 3, 71,0.5)",
+                                    strokeColor: "rgba(9, 3, 71,0.5)",
+                                    pointColor: "rgba(9, 3, 71,0.5)",
+                                    pointStrokeColor: "#fff",
+                                    pointHighlightFill: "#fff",
+                                    pointHighlightStroke: "rgba(9, 3, 71,0.5)",
+                                    data: [@String.Join(",", disciplinasRadar.Select(s => s.MediaNotas.HasValue ? s.MediaNotas.Value.ToString("##.#").Replace(",", ".") : "0").ToList())],
+                                }
+                                ]
+                            };
+
+                        var options = {
+                                legend: {
+                                    display: true,
+                                    position: 'right'
+                                },
+                                min: 0,
+                                max: 10,
+                                scaleShowLine: true,
+                                scaleShowLabels: true,
+                                angleShowLineOut: true,
+                                scaleShowLabels: true,
+                                scaleBeginAtZero: true,
+                                angleLineColor: "rgba(0,0,0,.1)",
+                                angleLineWidth: 1,
+                                pointLabelFontFamily: "'Arial'",
+                                pointLabelFontStyle: "normal",
+                                pointLabelFontSize: 14,
+                                pointLabelFontColor: "#666",
+                                pointDot: true,
+                                pointDotRadius: 3,
+                                pointDotStrokeWidth: 1,
+                                pointHitDetectionRadius: 20,
+                                datasetStroke: true,
+                                datasetStrokeWidth: 2,
+                                datasetFill: true
+                            };
+
+                        var ctx = document.getElementById('@Html.Raw(radarId)').getContext('2d');
+                        var myRadarChart = new Chart(ctx).Radar(data, options);
+                            </script>
+                        </div>
+                        <div style="float:right">
+                            <table class="table-bordered table-condensed rounded-corner">
+                                <tbody>
+                                    <tr>
+                                        <td style="background-color:rgba(238, 197, 35,0.5);width:150px;text-align:center;border-radius:10px;color:white;"><b>Minhas Notas</b></td>
+                                        <td style="width:10px">&nbsp;</td>
+                                        <td style="background-color:rgba(9, 3, 71,0.5);width:150px;text-align:center;border-radius:10px;color:white;"><b>Média da Turma</b></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                }
+            </div>
+        }
+
+        <div class="tab-pane animated " id="DivTotalMedia">
+            @{
+                if (Model.Turmas == null || !Model.Turmas.Any())
+                {
+                    <h5>Nenhuma turma localizada.</h5>
+                    return;
+                }
+                if (Model.Bimestres == null || !Model.Bimestres.Any())
+                {
+                    <h5>Nenhum bimestre criado.</h5>
+                    return;
+                }
+                if (Model.Disciplinas == null || !Model.Disciplinas.Any())
+                {
+                    <h5>Nenhuma nota lançada.</h5>
+                    return;
+                }
+
+                @if (!String.IsNullOrEmpty(Model.IdAluno) && Model.Bimestres.Count() > 1)
+                {
+                    <br />
+                    <div class="body">
+                        @*<div class="row clearfix">
+                                <p style="float:right"><b>* Minha nota</b> sem a média do 4º bimestre, quando elegível para a recuperação.</p>
+                            </div>*@
+                        <div class="row clearfix">
+                            @{
+                                var disciplinas = (from d in Model.Disciplinas
+                                                   where d.IdTurma == Model.Turmas.FirstOrDefault().Id && d.MediaAposRecuperacao.HasValue
+                                                   && !d.IdSubPeriodo.ToString().StartsWith("00000000")
+                                                   group new { d } by new { IdDisciplina = d.IdDisciplina, NomeDisciplina = d.NomeDisciplina }
+                                                                  into g
+                                                   select new Modelo.SchoolUp.Custom.CmDisciplinaMedias()
+                                                   {
+                                                       IdDisciplina = g.Select(s => s.d.IdDisciplina).FirstOrDefault(),
+                                                       NomeDisciplina = g.Select(s => s.d.NomeDisciplina).FirstOrDefault(),
+                                                       TotalAposRecuperacao = g.Sum(s => Math.Round(s.d.MediaAposRecuperacao.Value, 1)),
+                                                       TotalNotas = g.Count()
+                                                   });
+
+                                foreach (var disciplina in disciplinas)
+                                {
+
+                                    var disciplinaRecuperacao = (from d in Model.Disciplinas
+                                                                 where d.IdTurma == Model.Turmas.FirstOrDefault().Id && d.MediaAposRecuperacao.HasValue
+                                                                 && d.IdSubPeriodo.ToString().StartsWith("00000000")
+                                                                 && d.IdDisciplina == disciplina.IdDisciplina
+                                                                 select new Modelo.SchoolUp.Custom.CmDisciplinaMedias()
+                                                                 {
+                                                                     TotalAposRecuperacao = Math.Round(d.MediaAposRecuperacao.Value, 1)
+                                                                 }).FirstOrDefault();
+
+
+                                    if (disciplina.TotalAposRecuperacao.HasValue && disciplina.TotalAposRecuperacao.Value < (Model.PeriodoAtual.MediaAprovacao * 4)
+                                    && (decimal.Subtract((Model.PeriodoAtual.MediaAprovacao * 4), disciplina.TotalAposRecuperacao.Value) <= (decimal)0.4))
+                                    {
+                                        disciplina.TotalAposRecuperacao = Model.PeriodoAtual.MediaAprovacao * 4;
+                                    }
+
+                                    if (disciplinaRecuperacao?.TotalAposRecuperacao.HasValue == true)
+                                    {
+                                        disciplina.TotalAposRecuperacao = disciplinaRecuperacao.TotalAposRecuperacao * 4;
+                                    }
+
+                                    string total = disciplina.TotalAposRecuperacao.HasValue ? disciplina.TotalAposRecuperacao.Value.ToString("##.#").Replace(",", ".") : null;
+                                    string nomeDisciplina = "DivTotalNotas" + disciplina.IdDisciplina;
+                                    string pontosDoughnut1 = "";
+                                    string pontosDoughnut2 = "";
+                                    string corDoughnut1 = "";
+                                    string corDoughnut2 = "";
+                                    string corDoughnut3 = "#949FB1";
+                                    string labelDoughnut1 = "";
+                                    string labelDoughnut2 = "";
+
+                                    if (disciplina.TotalAposRecuperacao.HasValue && disciplina.TotalAposRecuperacao.Value >= (Model.PeriodoAtual.MediaAprovacao * 4))
+                                    {
+                                        pontosDoughnut1 = disciplina.TotalAposRecuperacao.Value.ToString("##.#").Replace(",", ".");
+                                        pontosDoughnut2 = "0";
+                                        corDoughnut1 = corDoughnut2 = "#008000";
+                                        labelDoughnut1 = "Aprovado";
+                                        labelDoughnut2 = "";
+                                    }
+                                    else
+                                    {
+                                        pontosDoughnut1 = total;
+                                        pontosDoughnut2 = (Model.PeriodoAtual.MediaAprovacao * 4 - disciplina.TotalAposRecuperacao.Value).ToString("##.#").Replace(",", ".");
+                                        corDoughnut1 = "#73D4F5";
+                                        corDoughnut2 = "#73D4F5";
+                                        labelDoughnut1 = "Minha nota";
+                                        labelDoughnut2 = "Para aprovar";
+
+                                        if (disciplina.TotalAposRecuperacao.HasValue && disciplina.TotalAposRecuperacao.Value >= (Model.PeriodoAtual.MediaAprovacao * 4))
+                                        {
+                                            corDoughnut1 = "#005AF1";
+                                        }
+                                        else
+                                        {
+                                            corDoughnut1 = "#F7464A";
+                                        }
+                                    }
+                                    string pontosDoughnut3 = (40 - disciplina.TotalAposRecuperacao.Value).ToString("##.#").Replace(",", ".");
+
+                                    if (disciplina.TotalAposRecuperacao.HasValue)
+                                    {
+                                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                            <h4 style="text-align:center; color:mediumblue">@disciplina.NomeDisciplina</h4>
+                                            <div id="@nomeDisciplina" class="graph" style="height:200px"></div>
+
+                                            @if (String.IsNullOrEmpty(labelDoughnut2))
+                                            {
+                                                @if (String.IsNullOrEmpty(pontosDoughnut3))
+                                                {
+                                                    <script>
+                                try {
+                                    var @nomeDisciplina.Replace("-", "") = Morris.Donut({
+                                        element: '@nomeDisciplina',
+                                        data: [
+                                            {
+                                                label: '@Html.Raw(labelDoughnut1)',
+                                                value: @pontosDoughnut1
+                                            }
+                                        ],
+                                        colors: ['@corDoughnut1'],
+                                        resize: true,
+                                        formatter: function (y) {
+                                            return y + ' pontos'
+                                        }
+                                    });
+                                } catch (e) { }
+                                                    </script>
+                                                }
+                                                else
+                                                {
+                                                    <script>
+                                try {
+                                    var @nomeDisciplina.Replace("-", "") = Morris.Donut({
+                                        element: '@nomeDisciplina',
+                                        data: [
+                                            {
+                                                value: @pontosDoughnut3,
+                                                label: 'Para total'
+                                            },
+                                            {
+                                                label: '@Html.Raw(labelDoughnut1)',
+                                                value: @pontosDoughnut1
+                                            }
+                                        ],
+                                        colors: ['@corDoughnut3', '@corDoughnut1'],
+                                        resize: true,
+                                        formatter: function (y) {
+                                            return y + ' pontos'
+                                        }
+                                    });
+                                } catch (e) { }
+                                                    </script>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                @*if (disciplina.TotalNotas.HasValue && disciplina.TotalNotas == 4)
+                                                        {
+                                                            var disciplina4Bimestre = (from d in Model.Disciplinas
+                                                                                       where d.IdTurma == Model.Turmas.FirstOrDefault().Id && d.MediaAposRecuperacao.HasValue
+                                                                                       && d.IdSubPeriodo.ToString() == "00ba904e-90f8-47ef-81fc-e61e5055511c"
+                                                                                       && d.IdDisciplina == disciplina.IdDisciplina
+                                                                                       select new Modelo.SchoolUp.Custom.CmDisciplinaMedias()
+                                                                                       {
+                                                                                           TotalAposRecuperacao = Math.Round(d.MediaAposRecuperacao.Value, 1)
+                                                                                       }).FirstOrDefault();
+
+
+                                                            if (disciplina4Bimestre.TotalAposRecuperacao >= 6)
+                                                            {
+                                                    <script>
+                                                                try {
+                                                                    var @nomeDisciplina.Replace("-", "") = Morris.Donut({
+                                                                        element: '@nomeDisciplina',
+                                                                        data: [
+                                                                            {
+                                                                                label: 'Para total',
+                                                                                value: @pontosDoughnut3
+                                                                            },
+                                                                            {
+                                                                                label: '@Html.Raw(labelDoughnut2)',
+                                                                                value: @pontosDoughnut2
+                                                                            },
+                                                                            {
+                                                                                label: '@Html.Raw(labelDoughnut1)',
+                                                                                value: @pontosDoughnut1
+                                                                            }
+                                                                        ],
+                                                                        colors: ['@corDoughnut3', '@corDoughnut2', '@corDoughnut1'],
+                                                                        resize: true,
+                                                                        formatter: function (y) {
+                                                                            return y + ' pontos'
+                                                                        }
+                                                                    });
+                                                                } catch (e) { }
+                                                    </script>
+                                                            }
+                                                            else
+                                                            {
+                                                                disciplina.TotalAposRecuperacao -= disciplina4Bimestre.TotalAposRecuperacao;
+                                                                pontosDoughnut3 = (40 - disciplina.TotalAposRecuperacao.Value).ToString("##.#").Replace(",", ".");
+                                                                pontosDoughnut2 = (Model.PeriodoAtual.MediaAprovacao * 4 - disciplina.TotalAposRecuperacao.Value).ToString("##.#").Replace(",", ".");
+                                                                pontosDoughnut1 = disciplina.TotalAposRecuperacao.Value.ToString("##.#").Replace(",", ".");
+                                                                labelDoughnut1 = "* Minha nota";
+
+                                                    <script>
+                                                                try {
+                                                                    var @nomeDisciplina.Replace("-", "") = Morris.Donut({
+                                                                        element: '@nomeDisciplina',
+                                                                        data: [
+                                                                            {
+                                                                                label: 'Para total',
+                                                                                value: @pontosDoughnut3
+                                                                            },
+                                                                            {
+                                                                                label: '@Html.Raw(labelDoughnut2)',
+                                                                                value: @pontosDoughnut2
+                                                                            },
+                                                                            {
+                                                                                label: '@Html.Raw(labelDoughnut1)',
+                                                                                value: @pontosDoughnut1
+                                                                            }
+                                                                        ],
+                                                                        colors: ['@corDoughnut3', '@corDoughnut2', '@corDoughnut1'],
+                                                                        resize: true,
+                                                                        formatter: function (y) {
+                                                                            return y + ' pontos'
+                                                                        }
+                                                                    });
+                                                                } catch (e) { }
+                                                    </script>
+                                                            }
+                                                        }
+                                                        else
+                                                        {*@
+                                                <script>
+                                    try {
+                                        var @nomeDisciplina.Replace("-", "") = Morris.Donut({
+                                            element: '@nomeDisciplina',
+                                            data: [
+                                                {
+                                                    label: 'Para total',
+                                                    value: @pontosDoughnut3
+                                                },
+                                                {
+                                                    label: '@Html.Raw(labelDoughnut2)',
+                                                    value: @pontosDoughnut2
+                                                },
+                                                {
+                                                    label: '@Html.Raw(labelDoughnut1)',
+                                                    value: @pontosDoughnut1
+                                                }
+                                            ],
+                                            colors: ['@corDoughnut3', '@corDoughnut2', '@corDoughnut1'],
+                                            resize: true,
+                                            formatter: function (y) {
+                                                return y + ' pontos'
+                                            }
+                                        });
+                                    } catch (e) { }
+                                                </script>
+                                                @*}*@
+                                            }
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+
+                        <br />
+                        @{string widthColumn = "100px";}
+                        <div class="row clearfix" style="float:right">
+                            <table class="table-bordered table-condensed rounded-corner">
+                                <tbody>
+                                    <tr>
+                                        <td style="background-color:#008000;width:@widthColumn;text-align:center;border-radius:10px;color:white;"><b>Passei</b></td>
+                                        <td style="width:10px">&nbsp;</td>
+                                        <td style="background-color:#005AF1;width:@widthColumn;text-align:center;border-radius:10px;color:white;"><b>Indo Bem</b></td>
+                                        <td style="width:10px">&nbsp;</td>
+                                        <td style="background-color:#F7464A;width:@widthColumn;text-align:center;border-radius:10px;color:white;"><b>Preciso Melhorar</b></td>
+                                        <td style="width:10px">&nbsp;</td>
+                                        <td style="background-color:#73D4F5;width:@widthColumn;text-align:center;border-radius:10px;color:white;"><b>Faltam para Passar</b></td>
+                                        <td style="width:10px">&nbsp;</td>
+                                        <td style="background-color:#949FB1;width:@widthColumn;text-align:center;border-radius:10px;color:white;"><b>Total</b></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br />
+
+                    </div>
+                }
+            }
+        </div>
+
+
+        @*<div class="tab-pane animated " id="DivGrade">
+                @{
+                    if (Model.Turmas == null || !Model.Turmas.Any())
+                    {
+                    <h5>Nenhuma turma criada.</h5>
+                        return;
+                    }
+                    if (Model.Bimestres == null || !Model.Bimestres.Any())
+                    {
+                    <h5>Nenhum bimestre criado.</h5>
+                        return;
+                    }
+                    if (Model.Disciplinas == null || !Model.Disciplinas.Any())
+                    {
+                    <h5>Nenhuma nota lançada.</h5>
+                        return;
+                    }
+
+                }
+            </div>*@
+    }
+</div>
+
+@if (!String.IsNullOrEmpty(Model.IdAluno) && Model.Disciplinas?.Any() == true)
+{
+    <br />
+    <br />
+    <br />
+    <div class="row clearfix" style="padding:10px">
+        @foreach (var disciplina in Model.Disciplinas.GroupBy(g => g.IdDisciplina).ToList())
+        {
+            string divGrafDisciplina = $"GrafLinha{disciplina.Select(s => s.IdDisciplina).FirstOrDefault()}";
+            string dataBimestre = "";
+
+            var disciplinaOrderBimestre = from d in disciplina
+                                          join b in Model.Bimestres on d.IdSubPeriodo equals b.Id
+                                          orderby b.Nome
+                                          select d;
+
+            if (disciplinaOrderBimestre.Count() < 2)
+            {
+                continue;
+            }
+
+            foreach (var bimestreDisciplina in disciplinaOrderBimestre)
+            {
+                dataBimestre += "{" + $"'xBimestre':'{Html.Raw(Model.Bimestres.Where(i => i.Id == bimestreDisciplina.IdSubPeriodo).FirstOrDefault().Nome)}'," +
+                            $"'nota':{bimestreDisciplina.MediaAposRecuperacao.Value.ToString("##.#").Replace(",", ".")}," +
+                            $"'turma':{Model.DisciplinasRadar.Where(i => i.IdSubPeriodo == bimestreDisciplina.IdSubPeriodo && i.IdDisciplina == disciplina.Select(s => s.IdDisciplina).FirstOrDefault()).FirstOrDefault().MediaNotas.Value.ToString("##.#").Replace(",", ".")}"
+                            + "},";
+            }
+            dataBimestre = dataBimestre.Substring(0, dataBimestre.Length - 1);
+            <div class="col-md-4 col-xs-12">
+                <h4 style="text-align:center">@disciplina.Select(s => s.NomeDisciplina).FirstOrDefault()</h4>
+                <br />
+                <div id="@divGrafDisciplina" style="height:300px" class="graph"></div>
+            </div>
+            <script>
+                    var morrisGraph = Morris.Line({
+                        element: '@divGrafDisciplina',
+                        data: [@Html.Raw(dataBimestre)],
+                        ymax: 10,
+                        ymin: 0,
+                        xkey: 'xBimestre',
+                        ykeys: ['nota', 'turma'],
+                        labels: ['Minha Nota', 'Média da Turma'],
+                        lineColors: ['rgb(238, 197, 35)', 'rgb(9, 3, 71)'],
+                        hideHover: 'auto',
+                        parseTime: false,
+                        xLabelAngle: 60,
+                        resize: true,
+                        lineWidth: 3
+                    });
+            </script>
+        }
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        ActiveTab();
+        //RefreshDonuts("empty-redraw");
+        $(".tabBimestre").click(function (e) {
+            RefreshDonuts("empty-redraw");
+        });
+    });
+
+    function RefreshDonuts(tipo) {
+        @{
+            var disciplinasDonut = (from d in Model.Disciplinas
+                                    where d.IdTurma == Model.Turmas.FirstOrDefault().Id && d.MediaAposRecuperacao.HasValue
+                                    group new { d } by new { IdDisciplina = d.IdDisciplina, NomeDisciplina = d.NomeDisciplina }
+                                                                  into g
+                                    select new Modelo.SchoolUp.Custom.CmDisciplinaMedias()
+                                    {
+                                        IdDisciplina = g.Select(s => s.d.IdDisciplina).FirstOrDefault(),
+                                        NomeDisciplina = g.Select(s => s.d.NomeDisciplina).FirstOrDefault(),
+                                        TotalAposRecuperacao = g.Sum(s => s.d.MediaAposRecuperacao.Value),
+                                        MediaAposRecuperacao = g.Average(s => s.d.MediaAposRecuperacao.Value)
+                                    });
+
+            foreach (var disciplina in disciplinasDonut)
+            {
+                var nomeDisciplina = "DivTotalNotas" + disciplina.IdDisciplina.ToString().Replace("-", "");
+
+                @Html.Raw(String.Concat("if(tipo.indexOf('empty') > -1) $('#", nomeDisciplina, "').empty();"))
+                @Html.Raw(String.Concat("if(tipo.indexOf('redraw') > -1) ", nomeDisciplina, ".redraw();"))
+                @Html.Raw(@String.Concat("if(tipo.indexOf('redraw') > -1) ", nomeDisciplina, ".select(", nomeDisciplina, ".segments.length - 1);"))
+            }
+        }
+        console.clear();
+    }
+
+    function ActiveTab() {
+        $("li[role='presentation']").click(function () {
+            $("li[role='presentation']").removeClass("active");
+            $("#" + this.id).addClass("active");
+            RefreshDonuts("empty-redraw");
+        });
+        $('ul.nav a').on('shown.bs.tab', function (e) {
+            RefreshDonuts("empty-redraw");
+        });
+    }
+</script>

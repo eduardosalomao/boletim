@@ -1,0 +1,70 @@
+﻿@{
+    ViewData["Title"] = ViewBag.TituloPagina;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*<h4 class="text-info">@Html.Raw(@ViewBag.TituloSecaoHtml)</h4>
+    <hr />*@
+
+@Html.AntiForgeryToken()
+<div id="DivConteudo">
+    <section>
+        <div class="content-fluid">
+            @*<div class="col-md-11 col-md-offset-1">*@
+            <form id="formPrincipal" asp-action="@ViewBag.Action" data-ajax="true" data-ajax-method="POST" data-ajax-begin="onBegin" data-ajax-complete="onComplete"
+                  data-ajax-mode="replace" data-ajax-update="#DivMensagem">
+                <div id="DivMensagem">
+                    @{
+                        Html.RenderPartial("JanelaMensagem");
+                    }
+                </div>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @{
+                    if (ViewBag.Perfil.Contains("SCHOOLUP_ADMIN") || ViewBag.Perfil.Contains("SCHOOLUP_RESPONSAVEL") || ViewBag.Perfil.Contains("SCHOOLUP_ALUNO"))
+                    {
+                        @RenderBody()
+                    }
+                    else
+                    {
+                        <fieldset disabled>
+                            @RenderBody()
+                        </fieldset>
+
+                    }
+                }
+                <br />
+                <div id="btnGroupCadastro" class="form-row col-md-12 center-block text-center" style="text-align:center;">
+                    @{
+                        if (ViewBag.Perfil.Contains("SCHOOLUP_ADMIN") || ViewBag.Perfil.Contains("SCHOOLUP_RESPONSAVEL") || ViewBag.Perfil.Contains("SCHOOLUP_ALUNO"))
+                        {
+                            <button id="BtnCadastroGravar" value="Gravar" class="btn btn-primary col-md-1 BtnCadastro">
+                                <i class="fas fa-save"></i>
+                            </button>
+                            <a id="BtnCadastroNovo" href="@Url.Action("Cadastro", new { id="" })" formnovalidate="formnovalidate" onclick="ProcessandoCadastro(); return true;" class="btn btn-success col-md-1 BtnCadastro">
+                                <i class="far fa-file"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <script>
+                                $(".show-tick").prop("disabled", true);
+                            </script>
+                        }
+                    }
+                    <a id="BtnCadastroVoltar" href="@Url.Action("Index")" formnovalidate="formnovalidate" onclick="ProcessandoCadastro(); return true;" class="btn text-info col-md-1 BtnCadastro">
+                        <i class="fas fa-backward"></i>
+                    </a>
+                    <div id="DivProcessandoCadastro" class="col-md-2 invisible">
+                        <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="~/js/cadastro.js"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @RenderSection("ScriptsFilho", required: false)
+}

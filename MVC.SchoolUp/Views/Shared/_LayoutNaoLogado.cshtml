@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Meu Boletim">
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="~/lib/Font-Awesome/web-fonts-with-css/css/fontawesome-all.css" />
+    <link href="~/lib/bootstrap-441/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/css/style.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap-select/dist/css/bootstrap-select.css" rel="stylesheet" />
+    <link href="~/css/Layout.css" rel="stylesheet" />
+</head>
+<body>
+    <script src="~/lib/jquery-341/jquery.min.js"></script>
+    <script src="~/lib/bootstrap-441/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+    <script src="~/js/Layout.js"></script>
+    @RenderSection("Scripts", required: false)
+
+<div class="page-wrapper chiller-theme toggled">
+    <div class="form-row d-block d-sm-none mx-auto justify-content-center align-items-center" style="height:70px!important;background-color:#090347!important">
+        <div class="d-flex align-items-center justify-content-center">
+            <div class="d-flex flex-column">
+                <div class="col-xs-12">
+                    <img src="~/images/meuboletim.png" style="padding-top:20px;max-width:50px;text-align:left!important" class="img-responsive" />
+                    <img src="~/images/logo.png" style="padding-top:20px;max-width:100px;text-align:right!important" class="img-responsive">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-row clearfix d-none d-sm-block" style="height:70px!important;background-color:#090347!important">
+        <ul class="navbar list-unstyled" style="background-color:#090347!important">
+            <li class="nav-item col-md-4 col-xs-6">
+                <img src="~/images/meuboletim.png" width="80" class="img-responsive" />
+            </li>
+            <li class="nav-item col-md-4 col-xs-6">
+                <img src="~/images/logo.png" width="200" class="img-responsive center-block">
+            </li>
+            <li class="nav-item col-md-4 text-right text-white">
+                &nbsp;
+            </li>
+        </ul>
+    </div>
+    <div class="form-row clearfix">
+        <div class="container-fluid">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+</body>
+</html>

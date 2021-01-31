@@ -1,0 +1,113 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Principal.Avaliacao>
+
+@{
+    ViewBag.TituloPagina = "Calendário";
+    Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Disiciplina";
+    ViewBag.Action = "Cadastro";
+    ViewBag.View = "Avaliacao";
+}
+
+<script src="~/MeuBoletim/plugins/jquery-inputmask/jquery.inputmask.bundle.js"></script>
+<script src="~/MeuBoletim/plugins/momentjs/moment.js"></script>
+<script src="~/MeuBoletim/plugins/momentjs/locales.js"></script>
+<script src="~/MeuBoletim/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+<link href="~/MeuBoletim/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" rel="stylesheet" />
+
+
+<input asp-for="Dados.FirstOrDefault().Id" type="hidden" value="@ViewBag.Id" />
+<input asp-for="Dados.FirstOrDefault().IdTurma" type="hidden" value="@ViewBag.IdTurma" />
+<input asp-for="Dados.FirstOrDefault().IdSubPeriodo" type="hidden" value="@ViewBag.IdSubPeriodo" />
+<div class="row clearfix">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="body">
+                <div class="row clearfix">
+                    <div class="col-md-12">
+                        <p>
+                            <label asp-for="Dados.FirstOrDefault().IdProfessorDisciplina" class="control-label col-indigo"></label>
+                        </p>
+                        <select asp-for="Dados.FirstOrDefault().IdProfessorDisciplina" class="form-control show-tick" asp-items="ViewBag.IdProfessorDisciplina" placeholder="@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem">
+                            <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+                        </select>
+                        <span asp-validation-for="Dados.FirstOrDefault().IdProfessorDisciplina" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-12">
+                        <p>
+                            <label asp-for="Dados.FirstOrDefault().IdTipoAvaliacao" class="control-label col-indigo"></label>
+                        </p>
+                        <select asp-for="Dados.FirstOrDefault().IdTipoAvaliacao" class="form-control show-tick" asp-items="ViewBag.IdTipoAvaliacao" placeholder="@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem">
+                            <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+                        </select>
+                        <span asp-validation-for="Dados.FirstOrDefault().IdTipoAvaliacao" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Sigla" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Sigla" class="form-control" placeholder="Digite a sigla do teste" autofocus="" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Sigla" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-12 demo-masked-input">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().De" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().De" placeholder="dd/mm/yyyy hh:mm" class="datetimepicker form-control" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().De" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-12 demo-masked-input">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Ate" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Ate" placeholder="dd/mm/yyyy hh:mm" class="datetimepicker form-control" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Ate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var link = document.getElementById('BtnCadastroVoltar').href;
+        document.getElementById('BtnCadastroVoltar').href = link + "/" + $("#IdTurma").val() + "/" + $("#IdSubPeriodo").val();
+        $('.datetimepicker').bootstrapMaterialDatePicker({
+            format: 'DD/MM/YYYY HH:mm',
+            lang: 'pt-br',
+            clearText: 'Limpar',
+            cancelText: 'Voltar',
+            clearButton: true,
+            weekStart: 0
+        });
+        $('#De').bootstrapMaterialDatePicker().on('change', function (e, date) {
+            $('#Ate').bootstrapMaterialDatePicker('setMinDate', date);
+            $('#Ate').focus();
+        });
+
+        
+        //var $demoMaskedInput = $('.demo-masked-input');
+        //$demoMaskedInput.find('.datetime').inputmask('dd/mm/yyyy hh:mm', { placeholder: '__/__/____ __:__', alias: "datetime", hourFormat: '24' });
+
+    });
+</script>

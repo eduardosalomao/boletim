@@ -1,0 +1,76 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Principal.Periodo>
+
+@{
+    ViewBag.TituloPagina = "Período";
+    Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Período";
+    ViewBag.Action = "Cadastro";
+    ViewBag.View = "Periodo";
+}
+
+<input asp-for="Dados.FirstOrDefault().Id" type="hidden" value="@ViewBag.Id" />
+<input asp-for="Dados.FirstOrDefault().IdEscola" type="hidden" value="@ViewBag.IdEscola" />
+<div class="row clearfix">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="body">
+                <div class="row clearfix">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Nome" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Nome" class="form-control" placeholder="Digite o nome" autofocus="" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Nome" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().MediaAprovacao" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                @{
+                                    string nota = Model?.Dados?.FirstOrDefault().MediaAprovacao == null ? "" : string.Format("{0:0.0}", Model.Dados.FirstOrDefault().MediaAprovacao);
+                                }
+                                <input asp-for="Dados.FirstOrDefault().MediaAprovacao" value="@nota" class="form-control nota" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().MediaAprovacao" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().De" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().De" placeholder="dd/mm/aaaa" class="form-control" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().De" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Ate" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Ate" placeholder="dd/mm/aaaa" class="form-control" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Ate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.nota').inputmask('9,9', { placeholder: '', numericInput: true });
+    });
+</script>

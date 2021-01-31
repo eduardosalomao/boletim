@@ -1,0 +1,47 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Principal.Serie>
+
+@{
+    ViewBag.TituloPagina = "Série";
+    Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Série";
+    ViewBag.Action = "Cadastro";
+    ViewBag.View = "Serie";
+}
+
+<input asp-for="Dados.FirstOrDefault().Id" type="hidden" value="@ViewBag.Id" />
+<div class="row clearfix">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="body">
+                <div class="row clearfix">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Nome" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Nome" class="form-control" placeholder="Digite o nome" autofocus="" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Nome" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().IdEnsino" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <select asp-for="Dados.FirstOrDefault().IdEnsino" class="form-control show-tick" asp-items="ViewBag.IdEnsino" placeholder="@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem">
+                                    <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+                                </select>
+                                <span asp-validation-for="Dados.FirstOrDefault().IdEnsino" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

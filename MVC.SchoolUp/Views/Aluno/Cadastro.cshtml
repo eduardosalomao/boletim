@@ -1,0 +1,228 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Custom.CmAluno>
+
+@{
+    ViewBag.TituloPagina = "Aluno";
+    Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Aluno";
+    ViewBag.Action = "Cadastro";
+    ViewBag.View = "Aluno";
+}
+
+<script src="~/lib/inputmask/dist/min/jquery.inputmask.bundle.min.js"></script>
+<script src="~/js/Processando.js"></script>
+
+<input asp-for="Dados.FirstOrDefault().IdEscola" type="hidden" value="@ViewBag.IdEscola" />
+<input asp-for="Dados.FirstOrDefault().Id" type="hidden" value="@ViewBag.Id" />
+<div class="row clearfix">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="body">
+                <ul class="nav nav-pills" role="tablist">
+                    <li id="LiHome" role="presentation" class="nav-item">
+                        <a href="#DivHome" class="nav-link active" data-toggle="tab" role="tab" aria-controls="home" aria-selected="true">
+                            <i class="fas fa-home"></i> Principal
+                        </a>
+                    </li>
+                    @if (Model?.Dados?.FirstOrDefault()?.Id != null && Model?.Dados?.FirstOrDefault()?.Id != Guid.Empty)
+                    {
+                        <li id="LiDisciplina" role="presentation">
+                            <a href="#DivNotas" class="nav-link" data-toggle="tab" role="tab" aria-controls="notas" aria-selected="false">
+                                <i class="fas fa-award"></i> Notas
+                            </a>
+                        </li>
+                    }
+                </ul>
+
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade show active" id="DivHome" aria-labelledby="LiHome">
+                        <br />
+                        <div class="row clearfix">
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <p>
+                                        <b><label asp-for="Dados.FirstOrDefault().Nome" class="control-label col-indigo"></label></b>
+                                    </p>
+                                    <div class="form-line">
+                                        <input asp-for="Dados.FirstOrDefault().Nome" class="form-control" placeholder="Digite o nome" autofocus="" aria-required="true" />
+                                        <span asp-validation-for="Dados.FirstOrDefault().Nome" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <p>
+                                        <b><label asp-for="Dados.FirstOrDefault().Matricula" class="control-label col-indigo"></label></b>
+                                    </p>
+                                    <div class="form-line">
+                                        <input id="HdnEmail" name="HdnEmail" value="@ViewBag.Matricula" type="hidden" />
+                                        <input asp-for="Dados.FirstOrDefault().Matricula" class="form-control" placeholder="Digite a matrícula" autofocus="" aria-required="true" />
+                                        <span asp-validation-for="Dados.FirstOrDefault().Matricula" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <p>
+                                        <b><label asp-for="Dados.FirstOrDefault().DataNascimento" class="control-label col-indigo"></label></b>
+                                    </p>
+                                    <div class="form-line">
+                                        <input asp-for="Dados.FirstOrDefault().DataNascimento" placeholder="dd/mm/aaaa" class="form-control" aria-required="true" />
+                                        <span asp-validation-for="Dados.FirstOrDefault().DataNascimento" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <p>
+                                        <b><label asp-for="Dados.FirstOrDefault().Cpf" class="control-label col-indigo"></label></b>
+                                    </p>
+                                    <div class="form-line">
+                                        <input asp-for="Dados.FirstOrDefault().Cpf" class="form-control cpf" placeholder="Digite o cpf" aria-required="true" />
+                                        <span asp-validation-for="Dados.FirstOrDefault().Cpf" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <p>
+                                        <b><label asp-for="Dados.FirstOrDefault().Email" class="control-label col-indigo"></label></b>
+                                    </p>
+                                    <div class="form-line">
+                                        <input asp-for="Dados.FirstOrDefault().Email" class="form-control" placeholder="Digite o email" aria-required="true" />
+                                        <span asp-validation-for="Dados.FirstOrDefault().Email" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    @if (Model?.Dados?.FirstOrDefault()?.Id != null && Model?.Dados?.FirstOrDefault()?.Id != Guid.Empty)
+                    {
+                        <div role="tabpanel" class="tab-pane fade show" id="DivNotas" aria-labelledby="LiNotas">
+                            <br />
+                            <div class="row clearfix">
+                                <div id="DivPeriodo" class="col-md-3">
+                                    <div class="input-group">
+                                        <p>
+                                            <b><label class="control-label col-indigo">Período</label></b>
+                                        </p>
+                                        <div class="form-line">
+                                            <select id="ddlPeriodo" name="ddlPeriodo" class="form-control show-tick" asp-items="ViewBag.IdPeriodo"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="input-group">
+                                        <p>
+                                            <b><label class="control-label col-indigo">Bimestre</label></b>
+                                        </p>
+                                        <div class="form-line">
+                                            <select id="ddlBimestre" name="ddlBimestre" class="form-control show-tick" asp-items="ViewBag.IdSubPeriodo">
+                                                <option value="" selected="selected">Escolha o bimestre</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="DivProcessandoIndex" class="col-md-2 invisible">
+                                    <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+                                </div>
+                            </div>
+                            <div class="row clearfix">
+                                <br />
+                                <div class="col-md-12">
+                                    <div id="DivPartialNotas">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.cpf').inputmask('999.999.999-99', { placeholder: ' ', numericInput: true });
+        if ($("#Id").val() != "" && $("#Id").val() != "@Guid.Empty.ToString()" ) {
+            CarregarNotasBimestre();
+        }
+        ChangePeriodo();
+        ChangeSubPeriodo();
+    });
+
+    function ChangePeriodo() {
+        $("#ddlPeriodo").change(function () {
+            ProcessandoIndex();
+            $("#ddlBimestre").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetSubPeriodo")',
+                dataType: 'json',
+                data: { idPeriodo: $("#ddlPeriodo").val() },
+                success: function (resultSubPeriodo) {
+                    if (resultSubPeriodo.dados == null) {
+                        $("#ddlBimestre").append("<option value=''>Sem bimestre</option>");
+                    }
+                    else {
+                        $("#ddlBimestre").append("<option value=''>Escolha o bimestre</option>");
+                    }
+                    $.each(resultSubPeriodo.dados, function (i, subPeriodo) {
+                        if (resultSubPeriodo.id == subPeriodo.id.toString()) {
+                            $("#ddlBimestre").append($('<option selected>').text(subPeriodo.nome).attr('value', subPeriodo.id));
+                        }
+                        else {
+                            $("#ddlBimestre").append($('<option>').text(subPeriodo.nome).attr('value', subPeriodo.id));
+                        }
+                    });
+                    //$("#ddlBimestre").selectpicker('refresh');
+                    //$("#ddlBimestre").selectpicker('render');
+                    CarregarNotasBimestre();
+                    DesativarProcessandoIndex();
+                },
+                error: function (ex) {
+                    DesativarProcessandoIndex();
+                    alert('Erro ao receber bimestres');
+                }
+            });
+
+            return false;
+        });
+    }
+
+    function ChangeSubPeriodo() {
+        $("#ddlBimestre").change(function () {
+            ProcessandoIndex();
+            CarregarNotasBimestre();
+            return false;
+        });
+    }
+
+    function CarregarNotas() {
+        $.ajax({
+        type: 'GET',
+        url: '@Url.Action("GetNotas")',
+        data: { idAluno: $("#Id").val() }
+        })
+        .done(function (resultGrade) {
+            $("#DivPartialNotas").html(resultGrade);
+            //DesativarProcessandoIndex();
+        });
+    }
+
+    function CarregarNotasBimestre() {
+        $.ajax({
+        type: 'GET',
+        url: '@Url.Action("GetNotasBimestre")',
+        data: { idAluno: $("#Id").val(), idPeriodo: $("#ddlPeriodo").val(), idBimestre: $("#ddlBimestre").val() }
+        })
+        .done(function (resultGrade) {
+            $("#DivPartialNotas").html(resultGrade);
+        });
+    }
+
+</script>
+

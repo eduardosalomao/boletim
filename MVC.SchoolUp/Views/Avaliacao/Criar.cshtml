@@ -1,0 +1,346 @@
+﻿@model Modelo.Nucleo.Geral.GlResposta<Modelo.SchoolUp.Principal.Avaliacao>
+
+@{
+    ViewBag.TituloPagina = "Calendário";
+    //Layout = "~/Views/Shared/PaginaBase.cshtml";
+    ViewBag.TituloSecaoHtml = "<i class='glyphicon glyphicon-book text-success'></i>&nbsp;&nbsp;Avaliação";
+    ViewBag.Action = "Criar";
+    ViewBag.View = "Avaliacao";
+}
+
+
+<link href="~/MeuBoletim/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
+
+<!-- Jquery DataTable Plugin Js -->
+<script src="~/MeuBoletim/plugins/jquery-datatable/jquery.dataTables.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/buttons.flash.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/jszip.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/pdfmake.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/vfs_fonts.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/buttons.html5.min.js"></script>
+<script src="~/MeuBoletim/plugins/jquery-datatable/extensions/export/buttons.print.min.js"></script>
+<script src="~/js/calendario.js"></script>
+
+<script src="~/MeuBoletim/plugins/jquery-inputmask/jquery.inputmask.bundle.js"></script>
+
+
+<input asp-for="Dados.FirstOrDefault().Id" type="hidden" value="@ViewBag.Id" />
+<div class="row clearfix">
+
+    @*<input id="HdnPrefixoFileName" type="hidden" value="@Model.Dados?.FirstOrDefault().IdTurma.ToString() - @Model.Dados?.FirstOrDefault().IdSubPeriodo.ToString()" name="HdnPrefixoFileName" />*@
+    <div class="col-md-12">
+        <div class="card">
+            <div class="body">
+                <h3><i class="fas fa-list text-warning"></i><b class="text-info">&nbsp;&nbsp;Lista</b></h3>
+                <div class="row clearfix">
+                    <div class="col-md-2">
+                        <p>
+                            <label class="control-label col-indigo">Período</label>
+                        </p>
+                        <select id="ddlPeriodoBusca" name="ddlPeriodoBusca" class="form-control show-tick" asp-items="ViewBag.IdPeriodo">
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <p>
+                            <label class="control-label col-indigo">Bimestre</label>
+                        </p>
+                        <select id="ddlBimestreBusca" name="ddlBimestreBusca" class="form-control show-tick" asp-items="ViewBag.IdSubPeriodo">
+                            @*<option value="" selected="selected">Escolha o bimestre</option>*@
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <p>
+                            <label class="control-label col-indigo">Turma</label>
+                        </p>
+                        <select id="ddlTurmaBusca" name="ddlTurmaBusca" class="form-control show-tick" asp-items="ViewBag.IdTurma">
+                            <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmaTurma</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row clearfix">
+
+                    <div id="DivPartialGrade">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="DivMensagem">
+        @{
+            Html.RenderPartial("JanelaMensagem");
+        }
+    </div>
+
+    <div id="DivProcessandoIndex" class="col-md-2 invisible">
+        <img src="~/images/carregandoGrande.gif" alt="Carregando" />
+    </div>
+
+    <div class="col-md-12">
+        <div class="card">
+            <div class="body">
+                <h3><i class="fas fa-address-card text-warning"></i><b class="text-info">&nbsp;&nbsp;Cadastro</b></h3>
+                <div class="row clearfix">
+                    <div class="col-md-2">
+                        <p>
+                            <label class="control-label col-indigo">Período</label>
+                        </p>
+                        <select id="ddlPeriodo" name="ddlPeriodo" class="form-control show-tick" asp-items="ViewBag.IdPeriodo"></select>
+                    </div>
+                    <div class="col-md-2">
+                        <p>
+                            <label class="control-label col-indigo">Bimestre</label>
+                        </p>
+                        <select id="ddlBimestre" name="ddlBimestre" class="form-control show-tick" asp-items="ViewBag.IdSubPeriodo">
+                            <option value="" selected="selected">Escolha o bimestre</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <p>
+                            <label class="control-label col-indigo">Turma</label>
+                        </p>
+                        <select id="ddlTurma" name="ddlTurma" class="form-control show-tick" asp-items="ViewBag.IdTurma">
+                            <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmaTurma</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <p>
+                            <label asp-for="Dados.FirstOrDefault().IdProfessorDisciplina" class="control-label col-indigo"></label>
+                        </p>
+                        <select asp-for="Dados.FirstOrDefault().IdProfessorDisciplina" class="form-control show-tick" asp-items="ViewBag.IdProfessorDisciplina" placeholder="@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem">
+                            <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+                        </select>
+                        <span asp-validation-for="Dados.FirstOrDefault().IdProfessorDisciplina" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-4">
+                        <p>
+                            <label asp-for="Dados.FirstOrDefault().IdTipoAvaliacao" class="control-label col-indigo"></label>
+                        </p>
+                        <select asp-for="Dados.FirstOrDefault().IdTipoAvaliacao" class="form-control show-tick" asp-items="ViewBag.IdTipoAvaliacao" placeholder="@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem">
+                            <option value="" selected="selected">@Modelo.SchoolUp.Recursos.Configuracoes.SelecioneUmItem</option>
+                        </select>
+                        <span asp-validation-for="Dados.FirstOrDefault().IdTipoAvaliacao" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Sigla" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Sigla" class="form-control" placeholder="Digite a sigla do teste" autofocus="" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Sigla" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 demo-masked-input">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().De" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().De" placeholder="dd/mm/yyyy hh:mm" class="datetimepicker form-control" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().De" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 demo-masked-input">
+                        <div class="input-group">
+                            <p>
+                                <b><label asp-for="Dados.FirstOrDefault().Ate" class="control-label col-indigo"></label></b>
+                            </p>
+                            <div class="form-line">
+                                <input asp-for="Dados.FirstOrDefault().Ate" placeholder="dd/mm/yyyy hh:mm" class="datetimepicker form-control" aria-required="true" />
+                                <span asp-validation-for="Dados.FirstOrDefault().Ate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-info">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var $demoMaskedInput = $('.demo-masked-input');
+        $demoMaskedInput.find('.datetime').inputmask('dd/mm/yyyy hh:mm', { placeholder: '__/__/____ __:__', alias: "datetime", hourFormat: '24' });
+        ChangePeriodo();
+        ChangePeriodoBusca();
+        ChangeSubPeriodoBusca();
+        ChangeTurmaBusca();
+    });
+
+    function ChangeSubPeriodoBusca() {
+        $("#ddlBimestreBusca").change(function () {
+            CarregarGrade();
+            return false;
+        });
+    }
+
+    function ChangeTurmaBusca() {
+        $("#ddlTurmaBusca").change(function () {
+            CarregarGrade();
+            return false;
+        });
+    }
+
+    function ChangePeriodoBusca() {
+        $("#ddlPeriodoBusca").change(function () {
+            ProcessandoIndex();
+            $("#ddlBimestreBusca").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetSubPeriodo")',
+                dataType: 'json',
+                data: { idPeriodo: $("#ddlPeriodoBusca").val() },
+                success: function (resultSubPeriodo) {
+                    if (resultSubPeriodo.dados == null) {
+                        $("#ddlBimestreBusca").append("<option value=''>Sem bimestre</option>");
+                    }
+                    else {
+                        $("#ddlBimestreBusca").append("<option value=''>Escolha o bimestre</option>");
+                    }
+                    $.each(resultSubPeriodo.dados, function (i, subPeriodo) {
+                        if (resultSubPeriodo.id == subPeriodo.id.toString()) {
+                            $("#ddlBimestreBusca").append($('<option selected>').text(subPeriodo.nome).attr('value', subPeriodo.id));
+                        }
+                        else {
+                            $("#ddlBimestreBusca").append($('<option>').text(subPeriodo.nome).attr('value', subPeriodo.id));
+                        }
+                    });
+                    //$("#ddlBimestreBusca").selectpicker('refresh');
+                    //$("#ddlBimestreBusca").selectpicker('render');
+                    DesativarProcessandoIndex();
+                },
+                error: function (ex) {
+                    DesativarProcessandoIndex();
+                    alert('Erro ao receber bimestres');
+                }
+            });
+
+            $("#ddlTurmaBusca").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetTurmas")',
+                dataType: 'json',
+                data: { idPeriodo: $("#ddlPeriodoBusca").val() },
+                success: function (resultTurma) {
+                    if (resultTurma == null) {
+                        $("#ddlTurmaBusca").append("<option value=''>Sem turma</option>");
+                    }
+                    else {
+                        $("#ddlTurmaBusca").append("<option value=''>Escolha a turma</option>");
+                    }
+                    $.each(resultTurma, function (i, turma) {
+                        $("#ddlTurmaBusca").append($('<option>').text(turma.nome).attr('value', turma.id));
+                    });
+                    //$("#ddlTurmaBusca").selectpicker('refresh');
+                    //$("#ddlTurmaBusca").selectpicker('render');
+                    DesativarProcessandoIndex();
+                },
+                error: function (ex) {
+                    DesativarProcessandoIndex();
+                    alert('Erro ao receber turmas');
+                }
+            });
+
+            return false;
+        });
+    }
+
+    function CarregarGrade() {
+        ProcessandoIndex();
+        var valTurma = $("#ddlTurmaBusca").val();
+        var valBimestre = $("#ddlBimestreBusca").val();
+        if (valTurma == null || valTurma == "" || valBimestre == null || valBimestre == "") {
+            DesativarProcessandoIndex();
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetGradeCalendario")',
+                data: { idTurma: valTurma, idSubPeriodo: valBimestre }
+            })
+            .done(function (result) {
+                $("#DivPartialGrade").html(result);
+                DesativarProcessandoIndex();
+            });
+        }
+    }
+
+    function ChangePeriodo() {
+        $("#ddlPeriodo").change(function () {
+            ProcessandoIndex();
+            $("#ddlBimestre").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetSubPeriodo")',
+                dataType: 'json',
+                data: { idPeriodo: $("#ddlPeriodo").val() },
+                success: function (resultSubPeriodo) {
+                    if (resultSubPeriodo.dados == null) {
+                        $("#ddlBimestre").append("<option value=''>Sem bimestre</option>");
+                    }
+                    else {
+                        $("#ddlBimestre").append("<option value=''>Escolha o bimestre</option>");
+                    }
+                    $.each(resultSubPeriodo.dados, function (i, subPeriodo) {
+                        if (resultSubPeriodo.id == subPeriodo.id.toString()) {
+                            $("#ddlBimestre").append($('<option selected>').text(subPeriodo.nome).attr('value', subPeriodo.id));
+                        }
+                        else {
+                            $("#ddlBimestre").append($('<option>').text(subPeriodo.nome).attr('value', subPeriodo.id));
+                        }
+                    });
+                    //$("#ddlBimestre").selectpicker('refresh');
+                    //$("#ddlBimestre").selectpicker('render');
+                    $("#BtnNovoLancamento").hide();
+                    DesativarProcessandoIndex();
+                },
+                error: function (ex) {
+                    DesativarProcessandoIndex();
+                    alert('Erro ao receber bimestres');
+                }
+            });
+
+            $("#ddlTurma").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetTurmas")',
+                dataType: 'json',
+                data: { idPeriodo: $("#ddlPeriodo").val() },
+                success: function (resultTurma) {
+                    if (resultTurma == null) {
+                        $("#ddlTurma").append("<option value=''>Sem turma</option>");
+                    }
+                    else {
+                        $("#ddlTurma").append("<option value=''>Escolha a turma</option>");
+                    }
+                    $.each(resultTurma, function (i, turma) {
+                        $("#ddlTurma").append($('<option>').text(turma.nome).attr('value', turma.id));
+                    });
+                    //$("#ddlTurma").selectpicker('refresh');
+                    //$("#ddlTurma").selectpicker('render');
+                    $("#BtnNovoLancamento").hide();
+                    DesativarProcessandoIndex();
+                },
+                error: function (ex) {
+                    DesativarProcessandoIndex();
+                    alert('Erro ao receber turmas');
+                }
+            });
+
+            return false;
+        });
+    }
+</script>

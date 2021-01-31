@@ -1,0 +1,265 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Meu Boletim">
+    <meta name="description" content="">
+
+    <link href="~/lib/Font-Awesome/web-fonts-with-css/css/fontawesome-all.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap-441/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/css/style.css" rel="stylesheet" />
+    <link href="~/lib/select2-4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="~/lib/select2-bootstrap-theme-master/dist/select2-bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/Layout.css" rel="stylesheet" />
+</head>
+<body>
+    <script src="~/lib/jquery-341/jquery.min.js"></script>
+    <script src="~/lib/bootstrap-441/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/select2-4.0.13/dist/js/select2.min.js"></script>
+    <script src="~/lib/select2-4.0.13/dist/js/i18n/pt-BR.js"></script>
+    <script src="~/js/Layout.js"></script>
+    @RenderSection("Scripts", required: false)
+
+    <div id="DivWrapper" class="page-wrapper chiller-theme toggled">
+        <div class="form-row d-md-none mx-auto justify-content-center align-items-center" style="height:70px!important;background-color:#090347!important">
+            <div class="d-flex align-items-center justify-content-center">
+                <div class="d-flex flex-column">
+                    <div class="col-xs-12">
+                        <img src="~/images/meuboletim.png" style="padding-top:20px;max-width:50px;text-align:left!important" class="img-responsive" />
+                        <img src="~/images/logo.png" style="padding-top:20px;max-width:100px;text-align:right!important" class="img-responsive">
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*<div class="form-row d-md-none mx-auto justify-content-center align-items-center" style="height:70px!important;background-color:#090347!important">
+            <div class="d-flex align-items-center justify-content-center">
+                <div class="d-flex flex-column">
+                    <div class="col-xs-12">
+                        <img src="~/images/meuboletim.png" style="padding-top:20px;max-width:50px;text-align:left!important" class="img-responsive" />
+                        <img src="~/images/logo.png" style="padding-top:20px;max-width:100px;text-align:right!important" class="img-responsive">
+                    </div>
+                </div>
+            </div>
+        </div>*@
+        <div class="form-row clearfix d-none d-md-block" style="height:70px!important;background-color:#090347!important">
+            <ul class="navbar list-unstyled" style="background-color:#090347!important">
+                <li class="nav-item col-md-4 col-xs-6">
+                    <img src="~/images/meuboletim.png" width="80" class="img-responsive" />
+                </li>
+                <li class="nav-item col-md-4 col-xs-6">
+                    <img src="~/images/logo.png" width="200" class="img-responsive center-block">
+                </li>
+                <li class="nav-item col-md-4 text-right text-white">
+                    <a href="@Url.Action("MudarSenha","Acesso")" title="Mudar Senha" class="text-white">@ViewBag.NomeUsuario</a><br />
+                    <a href="@Url.Action("Logout","Acesso")"><i class="fas fa-sign-out-alt text-white"></i></a>
+                </li>
+            </ul>
+        </div>
+        <div class="form-row clearfix">
+            <a id="show-sidebar" class="btn btn-sm btn-dark" href="#" style="top:68px!important">
+                <i class="fas fa-bars"></i>
+            </a>
+            <nav id="sidebar" class="sidebar-wrapper" style="top:68px!important;">
+                <div class="sidebar-content">
+                    <div class="sidebar-brand">
+                        <a href="@Url.Action("MudarSenha","Acesso")" title="Mudar Senha"><i class="fas fa-key text-white"></i></a>
+                        <a href="@Url.Action("Logout","Acesso")" title="Sair"><i class="fas fa-sign-out-alt text-white"></i></a>
+                        <div id="close-sidebar">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                    <div class="sidebar-header">
+                        <div class="user-pic">
+                            <img class="img-responsive img-rounded" src="~/images/UserAnonimo.jpg"
+                                 alt="Foto">
+                            <span class="text-right">
+                            </span>
+                        </div>
+                        <div class="user-info">
+                            <span class="user-name">
+                                @TempData["NomeAluno"]
+                            </span>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu">
+                        <ul>
+                            <li>
+                                <a href="@Url.Action("Index","Home")">
+                                    <i class="fa fa-home"></i>
+                                    <span>Principal</span>
+                                </a>
+                            </li>
+                            @if (ViewBag?.Perfil?.Count > 0 && (ViewBag.Perfil.Contains("SCHOOLUP_ADMIN") || ViewBag.Perfil.Contains("SCHOOLUP_SECRETARIA")))
+                            {
+                                <li class="sidebar-dropdown">
+                                    <a href="#">
+                                        <i class="fas fa-cogs"></i>
+                                        <span>Cadastro Auxiliar</span>
+                                    </a>
+                                    <div class="sidebar-submenu">
+                                        <ul>
+                                            <li>
+                                                <a href="@Url.Action("Index","Periodo")">
+                                                    Periodo
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="@Url.Action("Index","SubPeriodo")">Bimestre</a>
+                                            </li>
+                                            <li>
+                                                <a href="@Url.Action("Index","Turno")">Turno</a>
+                                            </li>
+                                            <li>
+                                                <a href="@Url.Action("Index","HorarioTurno")">Tempo</a>
+                                            </li>
+                                            <li>
+                                                <a href="@Url.Action("Index","Serie")">Série</a>
+                                            </li>
+                                            <li>
+                                                <a href="@Url.Action("Index","Turma")">Turma</a>
+                                            </li>
+                                            <li>
+                                                <a href="@Url.Action("Index","Disciplina")">Disciplina</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index","Professor")">
+                                        <i class="fa fa-chalkboard-teacher"></i>
+                                        <span>Professor</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Grade","Disciplina")">
+                                        <i class="far fa-calendar-alt"></i>
+                                        <span>Horário</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-dropdown">
+                                    <a>
+                                        <i class="fas fa-chart-line"></i>
+                                        <span>Relatórios</span>
+                                    </a>
+                                    <div class="sidebar-submenu">
+                                        <ul>
+                                            <li>
+                                                <a href="@Url.Action("AcessoResponsavel","Relatorio")">
+                                                    <i class="far fa-chart-bar"></i>
+                                                    <span>Acessos</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="sidebar-dropdown">
+                                    <a>
+                                        <i class="fa fa-graduation-cap"></i>
+                                        <span>Aluno</span>
+                                    </a>
+                                    <div class="sidebar-submenu">
+                                        <ul>
+                                            <li>
+                                                <a href="@Url.Action("Index","Aluno")">
+                                                    <i class="fas fa-user-graduate"></i>
+                                                    <span>Aluno</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="@Url.Action("Grade","Turma")">
+                                                    <i class="far fa-clipboard"></i>
+                                                    <span>Inscrição</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="sidebar-dropdown">
+                                    <a href="#">
+                                        <i class="fas fa-tasks"></i>
+                                        <span>Avaliações</span>
+                                    </a>
+                                    <div class="sidebar-submenu">
+                                        <ul>
+                                            <li>
+                                                <a href="@Url.Action("Index","Avaliacao")">
+                                                    <i class="far fa-calendar-plus"></i>
+                                                    <span>Datas</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="@Url.Action("Calendario","Avaliacao")">
+                                                    <i class="far fa-calendar-alt"></i>
+                                                    <span>Calendario</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="@Url.Action("Disciplina","Avaliacao")">
+                                                    <i class="fas fa-award"></i>
+                                                    <span>Notas</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="@Url.Action("ImportarIndex","Avaliacao")">
+                                                    <i class="fas fa-upload"></i>
+                                                    <span>Importar Notas</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            }
+                            else if (ViewBag?.Perfil?.Count > 0 && ViewBag.Perfil.Contains("SCHOOLUP_RESPONSAVEL"))
+                            {
+                                <li>
+                                    <a href="@Url.Action("Mudar","Aluno")">
+                                        <i class="fas fa-exchange-alt"></i>
+                                        <span>Mudar Aluno</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Calendario","Responsavel")">
+                                        <i class="far fa-calendar-alt"></i>
+                                        <span>Calendário</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Horario","Responsavel")">
+                                        <i class="far fa-calendar-alt"></i>
+                                        <span>Horário</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="sidebar-footer" style="background-color:#090347!important">
+                    <div class="mx-auto text-white">
+                        <div class="copyright">
+                            &copy; @DateTime.Now.Year -  <a href="https://virtualup.com.br">Virtualup</a>.
+                        </div>
+                        <div class="version">
+                            <b>Version: </b> beta 1.1.0
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <main class="page-content">
+                <div class="container-fluid">
+                    @RenderBody()
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            if ($(window).width() < 768) {
+                $('#DivWrapper').removeClass("toggled");
+            }
+        });
+    </script>
+</body>
+</html>
